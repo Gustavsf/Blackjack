@@ -1,0 +1,43 @@
+.card{
+    height: 130px;
+    margin: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+.flipped-card{
+    height: 130px;
+    width: 90px;
+    background-color: darkred;
+    position: absolute;
+    transform: translate(119px,-144px);
+    z-index: -1;
+}
+.Player{
+    margin: 10px auto;
+    width: 50%;
+    border: 3px solid red;
+    padding: 30px;
+}
+h1{
+    text-align: center;
+}
+#btn_action{
+    display: grid;
+    justify-items: center;
+}
+#btn_action button{
+    height: 30px;
+    width: 200px;
+}
+#all-card-container{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.score-container {
+    width: 10px;
+    margin: 0;
+}
+.score-container p{
+    display: inline;
+    margin: 0 10px;
+    font-size: 32px;
+}
