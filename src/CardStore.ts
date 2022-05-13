@@ -41,18 +41,22 @@ class CardStore {
       a = ((this.root.DealerStore.score[0] <= 17) ||
         this.root.DealerStore.score[0] < this.root.PlayerStore.score[0]);
       b = ((this.root.DealerStore.score[1] <= 17) ||
-        this.root.DealerStore.score[1] < this.root.PlayerStore.score[0]);
+        this.root.DealerStore.score[1] < this.root.PlayerStore.score[0]);     
+    }
+    if (this.root.PlayerStore.score[1] <= 21) {
+      d = ((this.root.DealerStore.score[0] <= 17) ||
+        this.root.DealerStore.score[0] < this.root.PlayerStore.score[1]);     
+      c = ((this.root.DealerStore.score[1] <= 17) ||
+        this.root.DealerStore.score[1] < this.root.PlayerStore.score[1]);     
+    }
+
+    if (this.root.PlayerStore.splitScore[0] <= 21) {
       e = ((this.root.DealerStore.score[0] <= 17) ||
         this.root.DealerStore.score[0] < this.root.PlayerStore.splitScore[0]);
       f = ((this.root.DealerStore.score[1] <= 17) ||
         this.root.DealerStore.score[1] < this.root.PlayerStore.splitScore[0]);
     }
-
-    if (this.root.PlayerStore.score[1] <= 21) {
-      d = ((this.root.DealerStore.score[0] <= 17) ||
-        this.root.DealerStore.score[0] < this.root.PlayerStore.score[1]);     
-      c = ((this.root.DealerStore.score[1] <= 17) ||
-        this.root.DealerStore.score[1] < this.root.PlayerStore.score[1]);
+    if (this.root.PlayerStore.splitScore[1] <= 21) {
       g = ((this.root.DealerStore.score[0] <= 17) ||
         this.root.DealerStore.score[0] < this.root.PlayerStore.splitScore[1]);     
       h = ((this.root.DealerStore.score[1] <= 17) ||
