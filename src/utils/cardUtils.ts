@@ -1,7 +1,9 @@
 import type { Card } from "../domain/Card";
 
-export function calculateScoreFromCards(cards: Card[]): number {
+export function calculateScoreFromCards(cards: Card[]) {
   let value = 0;
+  let secondValue = 0;
+
   cards.forEach((item) => {
     const val = item.cardValue;
     if (val !== "**") {
@@ -9,27 +11,38 @@ export function calculateScoreFromCards(cards: Card[]): number {
       const num = +splitVal[0];
       if (!isNaN(num)) {
         value += num;
+        secondValue += num;
       } else {
         if (["T", "J", "Q", "K"].includes(splitVal[0])) {
           value += 10;
+          secondValue += 10;
         } else {
-          // plus second value
+          secondValue += 1;
           value += 11;
         }
       }
     }
   });
-  return value;
+  return {
+    first: value,
+    second: secondValue
+  };
 }
 
 export function checkWinner(
-  playerScore: number,
-  dealerScore: number
+  playerScore: {
+    first: number,
+    second: number
+  },
+  dealerScore: {
+    first: number,
+    second: number
+  }
 ): "Win" | "Lose" | "Push" {
   let result: "Win" | "Lose" | "Push" = "Lose";
-  if (playerScore <= 21 && playerScore > dealerScore) {
+  if (playerScore.first <= 21 && playerScore.first > dealerScore.first) {
     result = "Win";
-  } else if (playerScore === dealerScore) {
+  } else if (playerScore.first === dealerScore.first) {
     result = "Push";
   } else {
     result = "Lose";

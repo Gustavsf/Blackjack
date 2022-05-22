@@ -15,7 +15,11 @@ export class Card {
     return this.value === "**";
   }
   
-  public get cardValue() {
+  public get card() {
     return this.value;
+  }
+  public get cardValue() {
+    const a = this.value.split("");
+    return a[0];
   }
 }

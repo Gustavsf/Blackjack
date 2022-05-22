@@ -17,10 +17,17 @@ export class Seat {
 
   public split() {
     const firstHand = this.findHand("first");
-    if (firstHand) {
-      const secondHand = firstHand.split("second");
-      this.hands.push(secondHand);
+    if(firstHand?.cards.length === 2){
+      if (firstHand && firstHand.cards[0].cardValue === firstHand.cards[1].cardValue){
+        const secondHand = firstHand.split("second");
+        this.hands.push(secondHand);
+        this.findHand('second')?.score;
+      }
     }
+    
+  }
+  public get isSplit(): boolean {
+    return (typeof this.findHand("second") !== "undefined");
   }
 
   public findHand(id: HandId) {

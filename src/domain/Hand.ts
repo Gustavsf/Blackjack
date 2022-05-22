@@ -23,11 +23,14 @@ export class Hand {
     }
   }
 
-  public get score(): number {
+  public get score() {
     return calculateScoreFromCards(this.cards);
   }
+  
   public get res() {
-    return (this.result = checkWinner(this.score, this.store.dealer.score));
+    return this.result = checkWinner(
+      {first: this.score.first, second: this.score.second}, 
+      {first: this.store.dealer.score.first, second: this.store.dealer.score.second});
   }
 
   public split(id: HandId) {
