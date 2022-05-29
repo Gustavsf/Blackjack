@@ -1,18 +1,19 @@
 import { makeAutoObservable } from "mobx";
 import { Card } from "./Card";
-
 import { calculateScoreFromCards, checkWinner } from "../utils/cardUtils";
 import { RootStore } from "../RootStore";
 
-export type HandId = "first" | "second";
+export type HandId = "first" | "second" | "third" | "fourth";
 
 export class Hand {
-  public readonly cards: Card[] = [];
+  public cards: Card[] = [];
   public result: "Win" | "Lose" | "Push" | undefined = undefined;
+  public isDone: boolean = false;
+  public bet: number = 0;
 
   public constructor(
     private readonly store: RootStore,
-    public readonly id: HandId
+    public readonly id: HandId,
   ) {
     makeAutoObservable(this);
   }
@@ -25,6 +26,12 @@ export class Hand {
 
   public get score() {
     return calculateScoreFromCards(this.cards);
+  }
+  public set betAmount(bet: number) {
+    this.bet = bet;
+  }
+  public done() {
+    this.isDone = true;
   }
   
   public get res() {

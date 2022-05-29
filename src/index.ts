@@ -1,38 +1,62 @@
 import "./styles.css";
 import { RootStore } from "./RootStore";
-import { startGame } from "./domain/phase/BetsClosedPhase";
-import { dealDealer } from "./domain/phase/DealerDealingPhase";
-import { dealPlayer } from "./domain/phase/DealingPhase";
-import { gameResult } from "./domain/phase/GameResultPhase";
-import { addBets } from "./domain/phase/BetsOpenPhase";
+import { BlackJack } from "./domain/BlackJack"
+type betAmount = 10 | 20 | 40 | 80 | 100;
 
-import { observe } from "mobx";
-
+//double down after split , hand needs bet
+//actual card deck
+//if bet not added, skip turn
 const rootStore = new RootStore();
+const blackJack = new BlackJack(rootStore);
 
-observe(rootStore.phase, "current", (change) => {
-  switch (change.newValue) {
-    case "BetsClosed":
-      console.log("betsclosed");
+function addCardOnClick() {
+  postMessage("addCardOnClick");
+  postMessage("playerAction");
+}
+function splitOnClick() {
+  postMessage("splitOnClick");
+}
+function addBetOnClick(){
+  postMessage("addBetOnClick");
+}
+function doubleOnClick(){
+  postMessage("doubleOnClick");
+}
+function stayOnClick(){
+  postMessage("stayOnClick");
+}
+function addEventListeners(){
+  document.getElementById("hit-btn")?.addEventListener('click', addCardOnClick)
+  document.getElementById("split-btn")?.addEventListener('click', splitOnClick)
+  document.getElementById("double-btn")?.addEventListener('click', doubleOnClick)
+  document.getElementById("stay-btn")?.addEventListener('click', stayOnClick)
+}
+function removeListeners(){
+  document.getElementById("hit-btn")?.removeEventListener('click', addCardOnClick)
+  document.getElementById("split-btn")?.removeEventListener('click', splitOnClick)
+  document.getElementById("double-btn")?.removeEventListener('click', doubleOnClick)
+  document.getElementById("stay-btn")?.removeEventListener('click', stayOnClick)
+}
+
+blackJack.start();
+
+window.onmessage = event => {
+  switch (event.data) {
+    case "addBets":
+        document.getElementById("addBet-btn")?.addEventListener('click', addBetOnClick)
       break;
-    case "BetsOpen":
-      addBets(rootStore);
-      console.log("betsopen");
+    case "dealDealer":
+        document.getElementById("addBet-btn")?.removeEventListener('click', addBetOnClick)   
       break;
-    case "DealerDealing":
-      dealDealer(rootStore);
-      console.log("dealer dealing");
+    case "dealPlayer":
+        addEventListeners();
       break;
-    case "Dealing":
-      dealPlayer(rootStore);
-      console.log("dealingxx");
+    case "finalDealerDealing":
+        removeListeners();
       break;
-    case "GameResult":
-      gameResult(rootStore);
+    case "gameResults":
       break;
     default:
       break;
   }
-});
-
-startGame(rootStore);
+}

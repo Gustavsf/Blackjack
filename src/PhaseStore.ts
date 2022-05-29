@@ -5,7 +5,8 @@ type GamePhase =
   | "BetsOpen"
   | "DealerDealing"
   | "Dealing"
-  | "GameResult";
+  | "GameResult"
+  | "finalDealerDealing";
 
 export class PhaseStore {
   public current: GamePhase = "BetsClosed";
