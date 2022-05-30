@@ -3,9 +3,10 @@ import { RootStore } from "./RootStore";
 import { BlackJack } from "./domain/BlackJack"
 type betAmount = 10 | 20 | 40 | 80 | 100;
 
-//double down after split , hand needs bet
 //actual card deck
-//if bet not added, skip turn
+//blackjack returns 3:2
+//side bets / insurence (if dealer dealt ace)
+//surrender (half of bet is lost), only on dealer first card
 const rootStore = new RootStore();
 const blackJack = new BlackJack(rootStore);
 

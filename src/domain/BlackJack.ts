@@ -13,7 +13,7 @@ export class BlackJack {
   public constructor(
     private readonly store: RootStore,
   ){
-    window.addEventListener('message', async (event) => {
+    window.addEventListener('message', (event) => {
       switch (event.data) {
         case "addCardOnClick":
             this.addCardOnClick();
@@ -44,8 +44,13 @@ export class BlackJack {
       startGame(this.store);
       addBets(this.store);
       postMessage("addBets");
-      await this.delay(5000);
-      //await till someone adds bet
+      await new Promise((resolve) =>{
+        window.addEventListener('message', (event) => {
+          if(event.data === "addBetOnClick"){
+            window.setTimeout(resolve, 1000)
+          }
+        })
+      }) 
 
       dealDealer(this.store);
       postMessage("dealDealer");
@@ -54,7 +59,15 @@ export class BlackJack {
       if(this.store.seats.seats[0].bet !== undefined){
         dealPlayer(this.store);
         postMessage("dealPlayer");
-        await this.delay(15000);
+        await new Promise((resolve) =>{
+          window.addEventListener('message', (event) => {
+            if(event.data === "playerAction"){
+              clearTimeout(timeout)
+              timeout = window.setTimeout(resolve, 7000)
+            }
+          })
+          let timeout = window.setTimeout(resolve, 10000)
+        }) 
       }
       
       postMessage("finalDealerDealing");
