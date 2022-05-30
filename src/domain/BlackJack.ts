@@ -63,7 +63,11 @@ export class BlackJack {
           window.addEventListener('message', (event) => {
             if(event.data === "playerAction"){
               clearTimeout(timeout)
-              timeout = window.setTimeout(resolve, 7000)
+              if(this.lastActiveHand()){
+                timeout = window.setTimeout(resolve, 7000)
+              } else {
+                timeout = window.setTimeout(resolve, 100)
+              }
             }
           })
           let timeout = window.setTimeout(resolve, 10000)
