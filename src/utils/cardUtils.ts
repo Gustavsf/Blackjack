@@ -4,8 +4,6 @@ import type { Value } from "../domain/Card";
 import type { CardType } from "../domain/Card";
 import { RootStore } from "../RootStore";
 
-
-
 export function getRandomCard(): Card{
   const cardValues: Value[] = 
   ["2", "3", "4", "5", "6", "7", "8", 

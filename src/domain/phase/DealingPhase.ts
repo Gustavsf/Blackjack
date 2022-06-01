@@ -10,11 +10,4 @@ export function dealPlayer(rootStore: RootStore) {
   rootStore.seats.seats[0].hands[0].addCard(getRandomCard());
   console.log(`${rootStore.seats.seats[0].hands[0].id} hand score:${rootStore.seats.seats[0].hands[0].score.first}(${rootStore.seats.seats[0].hands[0].score.second})`)
   console.log('Active hand: ' + rootStore.seats.seats[0].hands[0].id);
-  rootStore.seats.seats[0].hands[0].cards.map(item=>{
-      console.log(item.card);
-    })
-  const discard = observe(rootStore.seats.seats[0].hands[0].cards, () => {
-      //console.log('good');
-      //discard();
-  })
 }

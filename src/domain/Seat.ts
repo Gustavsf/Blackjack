@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "../RootStore";
+import { Card } from "./Card";
 import { Hand, HandId } from "./Hand";
 import { Player } from "./Player";
 
@@ -37,7 +38,14 @@ export class Seat {
     this.bet = undefined;
     this.hands.push(new Hand(this.store, "first"))
  }
-  
+ public allHandsJSON() {
+  const arr: Card[][] = [];
+  this.store.seats.seats[0].hands.map(item=>{
+    arr.push(item.cards);
+  })
+  const hands = JSON.stringify(arr);
+  return hands;
+  }
   public get state() {
     return this.hands[0];
   }

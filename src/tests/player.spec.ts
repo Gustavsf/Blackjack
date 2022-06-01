@@ -9,7 +9,6 @@ afterEach(() => {
     jest.clearAllTimers();
 });
 
-
 describe("Dealing", () => {
     test("should add cards to hand", () => {
         const rootStore = new RootStore();

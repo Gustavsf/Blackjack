@@ -1,12 +1,12 @@
 import { RootStore } from "../RootStore";
-import { getRandomCard, shouldDraw } from "../utils/cardUtils";
-import { Card } from "./Card";
+import { getRandomCard } from "../utils/cardUtils";
 import { startGame } from "./phase/BetsClosedPhase";
 import { addBets } from "./phase/BetsOpenPhase";
 import { dealDealer } from "./phase/DealerDealingPhase";
 import { dealPlayer } from "./phase/DealingPhase";
 import { gameResult } from "./phase/GameResultPhase";
 import { dealDealerFinal } from "./phase/FinalDealerPhase";
+import { Card } from "./Card";
 
 export class BlackJack {
 
@@ -31,9 +31,6 @@ export class BlackJack {
         case "stayOnClick":
             this.stayOnClick();
           break;
-        case "playerAction":
-            //should add to delay in start
-          break;
         default:
           break;
       }
@@ -53,12 +50,14 @@ export class BlackJack {
       }) 
 
       dealDealer(this.store);
-      postMessage("dealDealer");
+      const msg = "dealDealer-" + this.store.dealer.allCardsJSON();
+      postMessage(msg);
       await this.delay(2000);
 
       if(this.store.seats.seats[0].bet !== undefined){
         dealPlayer(this.store);
-        postMessage("dealPlayer");
+        const msg2 = "dealPlayer-" + this.store.seats.seats[0].allHandsJSON();
+        postMessage(msg2);
         await new Promise((resolve) =>{
           window.addEventListener('message', (event) => {
             if(event.data === "playerAction"){
@@ -73,10 +72,12 @@ export class BlackJack {
           let timeout = window.setTimeout(resolve, 10000)
         }) 
       }
-      
-      postMessage("finalDealerDealing");
+
       dealDealerFinal(this.store);
-      await this.delay(1000);
+      const msg3 = "finalDealerDealing-" + this.store.dealer.allCardsJSON();
+      postMessage(msg3);
+      //postMessage("finalDealerDealing");
+      await this.delay(5000);
 
       postMessage("gameResults");
       gameResult(this.store);
@@ -84,8 +85,39 @@ export class BlackJack {
       this.clearHands();
       this.start();
   }
+  private addCardOnClick() {
+    const hand = this.lastActiveHand();
+    if(hand && hand.isDone === false){
+      this.printCards();
+      const rand = getRandomCard()
+      hand.addCard(rand);
+      postMessage("addPlayerCard-" + rand.card + "-" + hand.id);
 
-  public lastActiveHand(){
+      console.log(rand.card);
+      console.log(hand.score);
+    }
+  }
+  private splitOnClick() {
+    
+    //if ace only one split, one card to each hand, can double down
+    const seat = this.store.seats.seats[0];
+    const hand = this.lastActiveHand();
+    if(hand && hand.isDone === false && hand.id !== "fourth"){
+      seat.split(hand.id);
+      const hands = this.store.seats.seats[0].hands
+      const arr: Card[][] = [];
+      this.store.seats.seats[0].hands.map(item=>{
+        arr.push(item.cards);
+      })
+      const handsString = JSON.stringify(arr);
+      postMessage("splitPlayerCards-" + handsString)
+      hands.map((item)=>{
+        console.log(item.cards[0].card);
+        console.log(`${item.id} hand score: ${item.score.first}(${item.score.second})`);
+      })
+    }
+  }
+  private lastActiveHand(){
     const hands = this.store.seats.seats[0].hands;
     const handsLenght = hands.length;
     for (let i = handsLenght; i > 0; i--) {
@@ -94,12 +126,12 @@ export class BlackJack {
       }
     }
   }
-  public clearHands(){
+  private clearHands(){
     const seat = this.store.seats.seats[0];
     seat.clearAllHands();
     this.store.dealer.clearHand();
   }
-  public printCards(){
+  private printCards(){
     const hand = this.lastActiveHand();
     if(hand){
       console.log('Active hand: ' + hand.id);
@@ -108,34 +140,13 @@ export class BlackJack {
       })
     }
   }
-  public splitOnClick() {
-    //if ace only one split, one card to each hand, can double down
-    const seat = this.store.seats.seats[0];
-    const hand = this.lastActiveHand();
-    if(hand && hand.isDone === false){
-      seat.split(hand.id);
-      const hands = this.store.seats.seats[0].hands
-      hands.map((item)=>{
-        console.log(item.cards[0].card);
-        console.log(`${item.id} hand score: ${item.score.first}(${item.score.second})`);
-      })
-    }
-  }
-  public addCardOnClick() {
-    const hand = this.lastActiveHand();
-    if(hand && hand.isDone === false){
-      this.printCards();
-      const rand = getRandomCard()
-      hand.addCard(rand);
-      console.log(rand.card);
-      console.log(hand.score);
-    }
-  }
-  public addBetOnClick(){
+  
+  
+  private addBetOnClick(){
     this.store.seats.seats[0].betAmount = 20;
     this.store.seats.seats[0].hands[0].betAmount = 20;
   }
-  public doubleOnClick(){
+  private doubleOnClick(){
     const firstBet = this.store.seats.seats[0].bet;
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false){
@@ -146,12 +157,12 @@ export class BlackJack {
       hand.done();
     }
   }
-  public stayOnClick(){
+  private stayOnClick(){
     const hand = this.lastActiveHand();
     hand?.done();
     this.printCards();
   }
-  public delay(time: number){
+  private delay(time: number){
       return new Promise((resolve) =>{
         window.setTimeout(resolve, time)
       }) 

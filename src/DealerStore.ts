@@ -14,6 +14,10 @@ export class DealerStore {
   public get score() {
     return calculateScoreFromCards(this.cards);
   }
+  public allCardsJSON() {
+    const cards = JSON.stringify(this.cards);
+    return cards;
+  }
   public clearHand(){
     this.cards = [];
   }

@@ -33,7 +33,10 @@ export class Hand {
   public done() {
     this.isDone = true;
   }
-  
+  public allCardsJSON() {
+    const cards = JSON.stringify(this.cards);
+    return cards;
+  }
   public get res() {
     return this.result = checkWinner(
       {first: this.score.first, second: this.score.second}, 
