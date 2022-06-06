@@ -11,23 +11,26 @@ export const Player = () =>  {
   const [bets, setBets] = React.useState<number[]>([])
   const [results, setResults] = React.useState<string[]>([])
 
-
   const [activeHand, setActiveHand] = React.useState<number | undefined>(0)
   const [addBetOverlay, setAddBetOverlay] = React.useState<BetOverlay>("none")
   const [actionOverlay, setActionOverlay] = React.useState<ActionOverlay>("none")
+  const playerHandsRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   React.useEffect(()=>{
-    const handsDiv = document.getElementById("player-hands-div")!;
+    const handsDiv = playerHandsRef;
     const len = cards.length;
-    if(len === 1){
-        handsDiv.style.gridTemplateColumns = "auto";
+    if(handsDiv.current){
+      if(len === 1){
+        handsDiv.current.style.gridTemplateColumns = "auto";
       } else if (len === 2){
-        handsDiv.style.gridTemplateColumns = "auto auto";
+        handsDiv.current.style.gridTemplateColumns = "auto auto";
       } else if (len === 3){
-        handsDiv.style.gridTemplateColumns = "auto auto auto";
+        handsDiv.current.style.gridTemplateColumns = "auto auto auto";
       } else if (len === 4){
-        handsDiv.style.gridTemplateColumns = "auto auto auto auto";
+        handsDiv.current.style.gridTemplateColumns = "auto auto auto auto";
       }
+    }
+    
   }, [cards])
 
   const handleClick = React.useCallback((arg: string) => {
@@ -102,7 +105,6 @@ export const Player = () =>  {
             setScores(scoreArr);
             setBets(betsArr);
           }
-          
         break;
       case "doublePlayerCards":
         const betsD: number[] = JSON.parse(smth[1]);
@@ -132,7 +134,7 @@ export const Player = () =>  {
 
   return (
     <>
-      <div id="player-hands-div">
+      <div id="player-hands-div" ref={playerHandsRef}>
         {cards[0]?.length > 0 ? 
           cards.map((item, i)=>{
             const isActive: boolean = (i === activeHand);
