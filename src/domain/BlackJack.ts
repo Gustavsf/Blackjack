@@ -6,24 +6,31 @@ import { dealDealer } from "./phase/DealerDealingPhase";
 import { dealPlayer } from "./phase/DealingPhase";
 import { gameResult } from "./phase/GameResultPhase";
 import { dealDealerFinal } from "./phase/FinalDealerPhase";
-import { Card } from "./Card";
+type betAmount = 10 | 20 | 40 | 80 | 100;
+//card design
+//card animations
+//win animation
+//second value render
+//total cash render
+//timer render
 
 export class BlackJack {
-
   public constructor(
     private readonly store: RootStore,
   ){
     window.addEventListener('message', (event) => {
-      switch (event.data) {
+      const full = event.data as string;
+      let part = full.split("-");
+      switch (part[0]) {
         case "addCardOnClick":
             this.addCardOnClick();
           break;
         case "splitOnClick":
             this.splitOnClick();
-            this.printCards();
           break;
         case "addBetOnClick":
-              this.addBetOnClick();
+              const amount = part[1];
+              this.addBetOnClick(amount);
           break;
         case "doubleOnClick":
             this.doubleOnClick();
@@ -39,25 +46,28 @@ export class BlackJack {
 
   public async start(){
       startGame(this.store);
+
       addBets(this.store);
       postMessage("addBets");
       await new Promise((resolve) =>{
         window.addEventListener('message', (event) => {
-          if(event.data === "addBetOnClick"){
+          const full = event.data as string;
+          let part = full.split("-");
+          if(part[0] === "addBetOnClick"){
             window.setTimeout(resolve, 1000)
           }
         })
       }) 
-
+      
       dealDealer(this.store);
-      const msg = "dealDealer-" + this.store.dealer.allCardsJSON();
-      postMessage(msg);
+      postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
       await this.delay(2000);
 
       if(this.store.seats.seats[0].bet !== undefined){
         dealPlayer(this.store);
-        const msg2 = "dealPlayer-" + this.store.seats.seats[0].allHandsJSON();
-        postMessage(msg2);
+        postMessage("dealPlayer-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + 
+        "-" + this.store.seats.seats[0].allHandsBetsJSON());
+        
         await new Promise((resolve) =>{
           window.addEventListener('message', (event) => {
             if(event.data === "playerAction"){
@@ -74,47 +84,57 @@ export class BlackJack {
       }
 
       dealDealerFinal(this.store);
-      const msg3 = "finalDealerDealing-" + this.store.dealer.allCardsJSON();
-      postMessage(msg3);
-      //postMessage("finalDealerDealing");
-      await this.delay(5000);
+      postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
 
-      postMessage("gameResults");
-      gameResult(this.store);
+      await this.delay(1000);
+      postMessage("gameResults-" + this.store.seats.seats[0].allHandsResultJSON());
+
       await this.delay(3000);
+      gameResult(this.store);
+
+      await this.delay(3000);
+      postMessage("cleanup");
+
       this.clearHands();
       this.start();
   }
   private addCardOnClick() {
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false){
-      this.printCards();
       const rand = getRandomCard()
       hand.addCard(rand);
-      postMessage("addPlayerCard-" + rand.card + "-" + hand.id);
-
-      console.log(rand.card);
-      console.log(hand.score);
+      postMessage("addPlayerCard-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + 
+        "-" + this.store.seats.seats[0].allHandsBetsJSON());
     }
   }
   private splitOnClick() {
-    
-    //if ace only one split, one card to each hand, can double down
     const seat = this.store.seats.seats[0];
     const hand = this.lastActiveHand();
-    if(hand && hand.isDone === false && hand.id !== "fourth"){
+    if(hand && hand.isDone === false && seat.hands.length < 4){
       seat.split(hand.id);
-      const hands = this.store.seats.seats[0].hands
-      const arr: Card[][] = [];
+      const arr: string[][] = [];
       this.store.seats.seats[0].hands.map(item=>{
-        arr.push(item.cards);
+        const arr2: string[] = []
+        item.cards.map(item=>{
+          arr2.push(item.cardValue)
+        })
+        arr.push(arr2);
       })
       const handsString = JSON.stringify(arr);
-      postMessage("splitPlayerCards-" + handsString)
-      hands.map((item)=>{
-        console.log(item.cards[0].card);
-        console.log(`${item.id} hand score: ${item.score.first}(${item.score.second})`);
-      })
+      postMessage("splitPlayerCards-" + handsString + "-" + this.store.seats.seats[0].allHandsScoreJSON() + "-" + this.store.seats.seats[0].allHandsBetsJSON())
+      this.lastActiveHand();
+    }
+  }
+  private doubleOnClick(){
+    const firstBet = this.store.seats.seats[0].bet;
+    const hand = this.lastActiveHand();
+    if(hand && hand.isDone === false){
+      const doubled = firstBet! * 2;
+      hand.betAmount = doubled;
+      this.addCardOnClick();
+      hand.done();
+      postMessage("doublePlayerCards-" + this.store.seats.seats[0].allHandsBetsJSON())
+      this.lastActiveHand();
     }
   }
   private lastActiveHand(){
@@ -122,6 +142,7 @@ export class BlackJack {
     const handsLenght = hands.length;
     for (let i = handsLenght; i > 0; i--) {
       if (hands[i-1].isDone === false) {
+        postMessage("activeHand-" + (i-1))
         return hands[i-1];
       }
     }
@@ -131,36 +152,16 @@ export class BlackJack {
     seat.clearAllHands();
     this.store.dealer.clearHand();
   }
-  private printCards(){
-    const hand = this.lastActiveHand();
-    if(hand){
-      console.log('Active hand: ' + hand.id);
-      hand.cards.map(item=>{
-        console.log(item.card);
-      })
-    }
-  }
   
-  
-  private addBetOnClick(){
-    this.store.seats.seats[0].betAmount = 20;
-    this.store.seats.seats[0].hands[0].betAmount = 20;
-  }
-  private doubleOnClick(){
-    const firstBet = this.store.seats.seats[0].bet;
-    const hand = this.lastActiveHand();
-    if(hand && hand.isDone === false){
-      const doubled = firstBet! * 2;
-      console.log("New bet: " + doubled);
-      hand.betAmount = doubled;
-      this.addCardOnClick();
-      hand.done();
-    }
+  private addBetOnClick(amount: string){
+    const num = parseInt(amount) as betAmount;
+    this.store.seats.seats[0].betAmount = num;
+    this.store.seats.seats[0].hands[0].betAmount = num;
   }
   private stayOnClick(){
     const hand = this.lastActiveHand();
     hand?.done();
-    this.printCards();
+    this.lastActiveHand();
   }
   private delay(time: number){
       return new Promise((resolve) =>{

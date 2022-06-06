@@ -6,6 +6,7 @@ import { Player } from "./Player";
 
 type SeatId = "0";
 type betAmount = 10 | 20 | 40 | 80 | 100;
+type PlayerScore = {first: number, second: number}
 
 export class Seat {
   public hands: Hand[] = [];
@@ -38,14 +39,46 @@ export class Seat {
     this.bet = undefined;
     this.hands.push(new Hand(this.store, "first"))
  }
+
  public allHandsJSON() {
-  const arr: Card[][] = [];
-  this.store.seats.seats[0].hands.map(item=>{
-    arr.push(item.cards);
-  })
-  const hands = JSON.stringify(arr);
-  return hands;
+  const arr: string[][] = [];
+    this.store.seats.seats[0].hands.map(item=>{
+      const arr2: string[] = []
+      item.cards.map(item=>{
+        arr2.push(item.cardValue)
+      })
+      arr.push(arr2);
+    })
+    const hands = JSON.stringify(arr);
+    return hands;
   }
+
+  public allHandsScoreJSON() {
+    const arr: PlayerScore[] = [];
+    this.store.seats.seats[0].hands.map(item=>{
+      arr.push(item.score);
+    })
+    const handScore = JSON.stringify(arr);
+    return handScore;
+  }
+
+  public allHandsBetsJSON() {
+    const arr: number[] = [];
+    this.store.seats.seats[0].hands.map(item=>{
+      arr.push(item.bet);
+    })
+    const handBets = JSON.stringify(arr);
+    return handBets;
+  }
+  public allHandsResultJSON() {
+    const arr: string[] = [];
+    this.store.seats.seats[0].hands.map(item=>{
+      arr.push(item.res);
+    })
+    const handResults = JSON.stringify(arr);
+    return handResults;
+  }
+
   public get state() {
     return this.hands[0];
   }

@@ -1,113 +1,127 @@
 import * as React from 'react'
-import { CardType } from '../domain/Card';
-type CardValue = {value: string};
+import { PlayerHand } from "./PlayerHand"
+type PlayerScore = {first: number, second: number}
+type BetOverlay = "none" | "flex";
+type ActionOverlay = "none" | "grid";
+type HandResults = "Win" | "Lose" | "Push" | undefined;
 
 export const Player = () =>  {
-  //make into one state
-  const [playerCards, setPlayerCards] = React.useState<string[]>([])
-  const [playerCards2, setPlayerCards2] = React.useState<string[]>([])
-  const [playerCards3, setPlayerCards3] = React.useState<string[]>([])
-  const [playerCards4, setPlayerCards4] = React.useState<string[]>([])
+  const [cards, setCards] = React.useState<string[][]>([])
+  const [scores, setScores] = React.useState<PlayerScore[]>([])
+  const [bets, setBets] = React.useState<number[]>([])
+  const [results, setResults] = React.useState<string[]>([])
 
-  function addCardOnClick() {
-    postMessage("addCardOnClick");
-    postMessage("playerAction");
-  }
-  function splitOnClick() {
-    postMessage("splitOnClick");
-    postMessage("playerAction");
-  }
-  function addBetOnClick(){
-    postMessage("addBetOnClick");
-  }
-  function doubleOnClick(){
-    postMessage("doubleOnClick");
-    postMessage("playerAction");
-  }
-  function stayOnClick(){
-    postMessage("stayOnClick");
-    postMessage("playerAction");
-  }
-  function addEventListeners(){
-    document.getElementById("hit-btn")?.addEventListener('click', addCardOnClick)
-    document.getElementById("split-btn")?.addEventListener('click', splitOnClick)
-    document.getElementById("double-btn")?.addEventListener('click', doubleOnClick)
-    document.getElementById("stay-btn")?.addEventListener('click', stayOnClick)
-  }
-  function removeListeners(){
-    document.getElementById("hit-btn")?.removeEventListener('click', addCardOnClick)
-    document.getElementById("split-btn")?.removeEventListener('click', splitOnClick)
-    document.getElementById("double-btn")?.removeEventListener('click', doubleOnClick)
-    document.getElementById("stay-btn")?.removeEventListener('click', stayOnClick)
-  }
- //get cards => add to state => render
- //same with score, bet
- //time between action probably
- //split add 4 grid positions, add hands accordingly
+
+  const [activeHand, setActiveHand] = React.useState<number | undefined>(0)
+  const [addBetOverlay, setAddBetOverlay] = React.useState<BetOverlay>("none")
+  const [actionOverlay, setActionOverlay] = React.useState<ActionOverlay>("none")
+
+  React.useEffect(()=>{
+    const handsDiv = document.getElementById("player-hands-div")!;
+    const len = cards.length;
+    if(len === 1){
+        handsDiv.style.gridTemplateColumns = "auto";
+      } else if (len === 2){
+        handsDiv.style.gridTemplateColumns = "auto auto";
+      } else if (len === 3){
+        handsDiv.style.gridTemplateColumns = "auto auto auto";
+      } else if (len === 4){
+        handsDiv.style.gridTemplateColumns = "auto auto auto auto";
+      }
+  }, [cards])
+
+  const handleClick = React.useCallback((arg: string) => {
+    switch (arg) {
+      case "hit":
+          postMessage("addCardOnClick");
+          postMessage("playerAction");
+        break;
+      case "split":
+          postMessage("splitOnClick");
+          postMessage("playerAction");
+        break;
+      case "double":
+          postMessage("doubleOnClick");
+          postMessage("playerAction");
+        break;
+      case "stay":
+          postMessage("stayOnClick");
+          postMessage("playerAction");
+        break;
+      case "bet":
+        break;
+      default:
+        if(["10","20","40","80","100"].includes(arg)){
+          postMessage("addBetOnClick-" + arg);
+        }
+        break;
+    }
+  }, [])
 
   const handleMessage = React.useCallback((event: MessageEvent) => {
     const full = event.data as string;
     let smth = full.split("-");
     switch (smth[0]) {
       case "addBets":
-          document.getElementById("addBet-btn")?.addEventListener('click', addBetOnClick)
+          setAddBetOverlay('flex')
         break;
       case "dealDealer":
-          document.getElementById("addBet-btn")?.removeEventListener('click', addBetOnClick)
+          setAddBetOverlay('none')
         break;
       case "dealPlayer":
-          addEventListeners();
-          const parsed2: CardValue[][] = JSON.parse(smth[1])
-          parsed2.map((items) => items.map((item)=>{
-            const val = item.value as string
-            console.log(val)
-            setPlayerCards(playerCards => [...playerCards, val])
-          }))
+          setActionOverlay('grid')
+          const cards: string[][] = JSON.parse(smth[1])
+          const scores: PlayerScore[] = JSON.parse(smth[2]);
+          const bets: number[] = JSON.parse(smth[3]);
+
+          setCards(cards)
+          setScores(scores)
+          setBets(bets);
         break;
       case "addPlayerCard":
-          //add hand id into request
-          console.log(smth[2])
-          if(smth[2] === "first"){
-            setPlayerCards(playerCards => [...playerCards, smth[1]])
-          } else if (smth[2] === "second") {
-            setPlayerCards2(playerCards => [...playerCards, smth[1]])
-          } else if (smth[2] === "third") {
-            setPlayerCards3(playerCards => [...playerCards, smth[1]])
-          } else if (smth[2] === "fourth") {
-            setPlayerCards4(playerCards => [...playerCards, smth[1]])
+          const cards3: string[][] = JSON.parse(smth[1])
+          const score: PlayerScore[] = JSON.parse(smth[2])
+          const bets2: number[] = JSON.parse(smth[3])
+
+          if(cards3[0].length > 0){
+            setCards(cards3);
+            setScores(score);
+            setBets(bets2);
           }
         break;
+      case "activeHand":
+          const handNum: number = JSON.parse(smth[1])
+          setActiveHand(handNum);
+        break;
       case "splitPlayerCards":
-          setPlayerCards([]);
-          setPlayerCards2([]);
-          setPlayerCards3([]);
-          setPlayerCards4([]);
-
-          const cardArr: CardValue[][] = JSON.parse(smth[1]);
-          cardArr.map((items, i) => items.map((item)=>{
-            const val = item.value as string
-            if(i === 0){
-              setPlayerCards(playerCards => [...playerCards, val])
-            }
-            if(i === 1){
-              setPlayerCards2(playerCards => [...playerCards, val])        
-            }
-            if(i === 2){
-              setPlayerCards3(playerCards => [...playerCards, val])      
-            }
-            if(i === 3){
-              setPlayerCards4(playerCards => [...playerCards, val])
-            }
-          }))
+          const cardArr: string[][] = JSON.parse(smth[1]);
+          const scoreArr: PlayerScore[] = JSON.parse(smth[2]);
+          const betsArr: number[] = JSON.parse(smth[3]);
+          if(cardArr[0].length > 0){
+            setCards(cardArr);
+            setScores(scoreArr);
+            setBets(betsArr);
+          }
+          
+        break;
+      case "doublePlayerCards":
+        const betsD: number[] = JSON.parse(smth[1]);
+        setBets(betsD);
         break;
       case "finalDealerDealing":
-          removeListeners();
+          setActionOverlay('none')
         break;
       case "gameResults":
-          setPlayerCards([]);
-          setPlayerCards2([]);
-          setPlayerCards3([]);
-          setPlayerCards4([]);
+        const resultArr: string[] = JSON.parse(smth[1]);
+        setResults(resultArr);
+        break;
+      case "cleanup":
+          setCards([]);
+          setScores([]);
+          setBets([]);
+          setResults([]);
+          const handsDiv3 = document.getElementById("player-hands-div")!;
+          handsDiv3.style.gridTemplateColumns = "auto";
         break;
       default:
         break;
@@ -115,34 +129,34 @@ export const Player = () =>  {
   }, []) 
 
   window.addEventListener('message', handleMessage);
-  //in one div probably better, so could use grid layot, responsive easier
+
   return (
     <>
-      <div id="dealer-cards-div">
-        {playerCards.map(item=>{
-          return <span key={item + Math.random()} style={{height:"100px", width:"100px"}}>{item}</span>
-        })}
+      <div id="player-hands-div">
+        {cards[0]?.length > 0 ? 
+          cards.map((item, i)=>{
+            const isActive: boolean = (i === activeHand);
+            const result = results[i] as HandResults;
+            return <PlayerHand playerCards={item} playerBet={bets[i]} playerScore={scores[i].first} handNum={i+1} isActive={isActive} winState={result}/>
+          })
+         : ""}
       </div>
-      <div id="dealer-cards-div">
-        {playerCards2.map(item=>{
-          return <span key={item + Math.random()} style={{height:"100px", width:"100px"}}>{item}</span>
-        })}
+
+      <div id="addBet-overlay" style={{display: addBetOverlay}}>
+        <h2>Add bet</h2>
+        <button className="addBet-btn" onClick={()=>handleClick("10")}>10</button>
+        <button className="addBet-btn" onClick={()=>handleClick("20")}>20</button>
+        <button className="addBet-btn" onClick={()=>handleClick("40")}>40</button>
+        <button className="addBet-btn" onClick={()=>handleClick("80")}>80</button>
+        <button className="addBet-btn" onClick={()=>handleClick("100")}>100</button>
       </div>
-      <div id="dealer-cards-div">
-        {playerCards3.map(item=>{
-          return <span key={item + Math.random()} style={{height:"100px", width:"100px"}}>{item}</span>
-        })}
-      </div>
-      <div id="dealer-cards-div">
-        {playerCards4.map(item=>{
-          return <span key={item + Math.random()} style={{height:"100px", width:"100px"}}>{item}</span>
-        })}
-      </div>
-      <button id="addBet-btn">Add bet</button>
-      <button id="hit-btn">Hit</button>
-      <button id="split-btn">Split</button>
-      <button id="stay-btn">Stay</button>
-      <button id="double-btn">Double</button>
+
+      <div id="player-action-overlay" style={{display: actionOverlay}}>
+        <button id="hit-btn" onClick={()=>handleClick("hit")}>Hit</button>
+        <button id="split-btn" onClick={()=>handleClick("split")}>Split</button>
+        <button id="stay-btn" onClick={()=>handleClick("stay")}>Stay</button>
+        <button id="double-btn" onClick={()=>handleClick("double")}>Double</button>
+      </div>   
     </>
   );
 }

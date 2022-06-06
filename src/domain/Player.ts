@@ -14,7 +14,6 @@ export class Player {
   }
   public addToBet(bet: betAmount): void{
     this.totalAmount -= bet;
-    console.log(bet);
   }
   public winFromBet(bet: betAmount): void{
     this.totalAmount += bet * 2;

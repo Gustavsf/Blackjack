@@ -6,26 +6,41 @@ import { RootStore } from "./RootStore";
 import { BlackJack } from "./domain/BlackJack"
 import * as React from 'react'
 
-type betAmount = 10 | 20 | 40 | 80 | 100;
-
-//actual card deck
-//blackjack returns 3:2
-//side bets / insurence (if dealer dealt ace)
-//surrender (half of bet is lost), only on dealer first card
-
 function App() {
   const rootStore = new RootStore();
   const blackJack = new BlackJack(rootStore);
-  blackJack.start();
-  //components
-  //current phase display
-  //player cards + score
-  //dealer cards + score
+  
+  const handleClick = () => {
+    const title = document.getElementById('title-div');
+    const wall = document.getElementById('div-wall');
+    const wall2 = document.getElementById('div-wall2');
+    const wall3 = document.getElementById('div-wall3');
+
+    title!.style.animationPlayState = "running"
+    wall!.style.animationPlayState = "running"
+    wall2!.style.animationPlayState = "running"
+    wall3!.style.animationPlayState = "running"
+    blackJack.start();
+  }
+
   return (
+    <>
     <div className="App">
-      <Dealer />
-      <Player /> 
+      <div id="title-div">
+        <h1 id="bj-title">BlackJack</h1>
+        <button onClick={handleClick}>Start</button>
+      </div>
+      <div id="table-div">
+        <div id="div-wall">
+          <Dealer />
+          <Player />
+        </div>
+        <div id="div-wall3"></div>
+        <div id="div-wall2"></div>
+      </div>     
     </div>
+    </>
+    
   );
 }
 

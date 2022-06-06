@@ -15,7 +15,11 @@ export class DealerStore {
     return calculateScoreFromCards(this.cards);
   }
   public allCardsJSON() {
-    const cards = JSON.stringify(this.cards);
+    const arr: string[] = [];
+    this.cards.map(item=>{
+      arr.push(item.cardValue)
+    })
+    const cards = JSON.stringify(arr);
     return cards;
   }
   public clearHand(){

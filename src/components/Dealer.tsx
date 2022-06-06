@@ -1,41 +1,29 @@
 import * as React from 'react'
-type CardValue = {value: string};
+type DealerScore = {first: number, second: number}
 
 export const Dealer = () =>  {
   const [dealerCards, setDealerCards] = React.useState<string[]>([])
-  
-  function addBetOnClick(){
-    postMessage("addBetOnClick");
-  }
- //get cards => add to state => render
- //same with score, bet
- //time between action probably
- //split add 4 grid positions, add hands accordingly
+  const [dealerScore, setDealerScore] = React.useState<number>(0)
 
   const handleMessage = React.useCallback((event: MessageEvent) => {
     const full = event.data as string;
     let smth = full.split("-");
     switch (smth[0]) {
       case "dealDealer":
-          document.getElementById("addBet-btn")?.removeEventListener('click', addBetOnClick)
-          const parsed: CardValue[] = JSON.parse(smth[1])
-          parsed.map((item)=>{
-            const val = item.value as string
-            setDealerCards(dealerCards => [...dealerCards, val])
-          })
+          const parsed: string[] = JSON.parse(smth[1])
+          setDealerCards(parsed)
+          const score: number = JSON.parse(smth[2]);
+          setDealerScore(score);
         break;
       case "finalDealerDealing":
-          const parsed3: CardValue[] = JSON.parse(smth[1])
-          setDealerCards([])
-          parsed3.map((item)=>{
-            let card = item.value as string;
-            if(card !== "**"){
-              setDealerCards(dealerCards => [...dealerCards, card ])
-            }
-          })
+          const cards: string[] = JSON.parse(smth[1])
+          setDealerCards(cards)
+          const score2: number = JSON.parse(smth[2]);
+          setDealerScore(score2);
         break;
-      case "gameResults":
+      case "cleanup":
         setDealerCards([])
+        setDealerScore(0)
         break;
       default:
         break;
@@ -46,11 +34,15 @@ export const Dealer = () =>  {
 
   return (
     <>
-      <div id="dealer-cards-div">
-        {dealerCards.map(item=>{
-          return <span key={item + Math.random()} style={{height:"100px", width:"100px"}}>{item}</span>
-        })}
-      </div>
+    <h2 id='dealer-score'>
+      {dealerScore > 0 ? dealerScore : ""}
+    </h2>
+    <div id="dealer-cards-div">
+      {dealerCards.map(item=>{
+        return <span key={item + Math.random()} style={{height:"100px", width:"80px"}}>{item}</span>
+      })}
+    </div>
+    <div id='curved-div'></div>
     </>
   );
 }
