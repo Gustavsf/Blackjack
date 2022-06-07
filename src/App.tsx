@@ -34,6 +34,12 @@ function App() {
         <div id="div-wall">
           <Dealer />
           <Player />
+          <div id="card-template">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
         <div id="div-wall3"></div>
         <div id="div-wall2"></div>

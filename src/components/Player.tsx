@@ -16,23 +16,6 @@ export const Player = () =>  {
   const [actionOverlay, setActionOverlay] = React.useState<ActionOverlay>("none")
   const playerHandsRef: React.RefObject<HTMLDivElement> = React.createRef()
 
-  React.useEffect(()=>{
-    const handsDiv = playerHandsRef;
-    const len = cards.length;
-    if(handsDiv.current){
-      if(len === 1){
-        handsDiv.current.style.gridTemplateColumns = "auto";
-      } else if (len === 2){
-        handsDiv.current.style.gridTemplateColumns = "auto auto";
-      } else if (len === 3){
-        handsDiv.current.style.gridTemplateColumns = "auto auto auto";
-      } else if (len === 4){
-        handsDiv.current.style.gridTemplateColumns = "auto auto auto auto";
-      }
-    }
-    
-  }, [cards])
-
   const handleClick = React.useCallback((arg: string) => {
     switch (arg) {
       case "hit":
@@ -50,8 +33,6 @@ export const Player = () =>  {
       case "stay":
           postMessage("stayOnClick");
           postMessage("playerAction");
-        break;
-      case "bet":
         break;
       default:
         if(["10","20","40","80","100"].includes(arg)){
@@ -82,14 +63,14 @@ export const Player = () =>  {
           setBets(bets);
         break;
       case "addPlayerCard":
-          const cards3: string[][] = JSON.parse(smth[1])
+          const cards2: string[][] = JSON.parse(smth[1])
           const score: PlayerScore[] = JSON.parse(smth[2])
-          const bets2: number[] = JSON.parse(smth[3])
+          const bet: number[] = JSON.parse(smth[3])
 
-          if(cards3[0].length > 0){
-            setCards(cards3);
+          if(cards2[0].length > 0){
+            setCards(cards2);
             setScores(score);
-            setBets(bets2);
+            setBets(bet);
           }
         break;
       case "activeHand":
@@ -123,7 +104,6 @@ export const Player = () =>  {
           setBets([]);
           setResults([]);
           const handsDiv3 = document.getElementById("player-hands-div")!;
-          handsDiv3.style.gridTemplateColumns = "auto";
         break;
       default:
         break;
@@ -135,22 +115,32 @@ export const Player = () =>  {
   return (
     <>
       <div id="player-hands-div" ref={playerHandsRef}>
-        {cards[0]?.length > 0 ? 
+        {cards.length === 1 ? <div className='player-hand'></div> : ""}
+        {cards.length > 0 ? 
           cards.map((item, i)=>{
             const isActive: boolean = (i === activeHand);
             const result = results[i] as HandResults;
             return <PlayerHand playerCards={item} playerBet={bets[i]} playerScore={scores[i].first} handNum={i+1} isActive={isActive} winState={result}/>
           })
          : ""}
+         {cards.length === 1 ?
+          [...Array((cards.length-3)*-1)].map(() =>
+          <div className='player-hand'>
+          </div>
+          )
+         : [...Array((cards.length-4)*-1)].map(() =>
+         <div className='player-hand'>
+         </div>
+         )}
       </div>
 
       <div id="addBet-overlay" style={{display: addBetOverlay}}>
-        <h2>Add bet</h2>
-        <button className="addBet-btn" onClick={()=>handleClick("10")}>10</button>
-        <button className="addBet-btn" onClick={()=>handleClick("20")}>20</button>
-        <button className="addBet-btn" onClick={()=>handleClick("40")}>40</button>
-        <button className="addBet-btn" onClick={()=>handleClick("80")}>80</button>
-        <button className="addBet-btn" onClick={()=>handleClick("100")}>100</button>
+        <h2>ADD BET</h2>
+        <button className="tokens" style={{backgroundColor:"orange"}} onClick={()=>handleClick("10")}>10</button>
+        <button className="tokens" style={{backgroundColor:"red"}} onClick={()=>handleClick("20")}>20</button>
+        <button className="tokens" style={{backgroundColor:"green"}} onClick={()=>handleClick("40")}>40</button>
+        <button className="tokens" style={{backgroundColor:"blue"}} onClick={()=>handleClick("80")}>80</button>
+        <button className="tokens" style={{backgroundColor:"black"}} onClick={()=>handleClick("100")}>100</button>
       </div>
 
       <div id="player-action-overlay" style={{display: actionOverlay}}>

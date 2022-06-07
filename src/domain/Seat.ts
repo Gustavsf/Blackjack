@@ -45,7 +45,7 @@ export class Seat {
     this.store.seats.seats[0].hands.map(item=>{
       const arr2: string[] = []
       item.cards.map(item=>{
-        arr2.push(item.cardValue)
+        arr2.push(item.card as string)
       })
       arr.push(arr2);
     })

@@ -39,7 +39,7 @@ export const Dealer = () =>  {
     </h2>
     <div id="dealer-cards-div">
       {dealerCards.map(item=>{
-        return <span key={item + Math.random()} style={{height:"100px", width:"80px"}}>{item}</span>
+        return <div className='cardD' key={item + Math.random()}>{item}</div>
       })}
     </div>
     <div id='curved-div'></div>

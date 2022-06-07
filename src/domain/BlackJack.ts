@@ -73,7 +73,7 @@ export class BlackJack {
             if(event.data === "playerAction"){
               clearTimeout(timeout)
               if(this.lastActiveHand()){
-                timeout = window.setTimeout(resolve, 7000)
+                timeout = window.setTimeout(resolve, 100000000)
               } else {
                 timeout = window.setTimeout(resolve, 100)
               }
@@ -85,7 +85,7 @@ export class BlackJack {
 
       dealDealerFinal(this.store);
       postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
-
+      
       await this.delay(1000);
       postMessage("gameResults-" + this.store.seats.seats[0].allHandsResultJSON());
 
@@ -112,16 +112,7 @@ export class BlackJack {
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false && seat.hands.length < 4){
       seat.split(hand.id);
-      const arr: string[][] = [];
-      this.store.seats.seats[0].hands.map(item=>{
-        const arr2: string[] = []
-        item.cards.map(item=>{
-          arr2.push(item.cardValue)
-        })
-        arr.push(arr2);
-      })
-      const handsString = JSON.stringify(arr);
-      postMessage("splitPlayerCards-" + handsString + "-" + this.store.seats.seats[0].allHandsScoreJSON() + "-" + this.store.seats.seats[0].allHandsBetsJSON())
+      postMessage("splitPlayerCards-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + "-" + this.store.seats.seats[0].allHandsBetsJSON())
       this.lastActiveHand();
     }
   }
@@ -152,7 +143,6 @@ export class BlackJack {
     seat.clearAllHands();
     this.store.dealer.clearHand();
   }
-  
   private addBetOnClick(amount: string){
     const num = parseInt(amount) as betAmount;
     this.store.seats.seats[0].betAmount = num;

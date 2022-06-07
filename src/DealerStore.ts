@@ -17,7 +17,7 @@ export class DealerStore {
   public allCardsJSON() {
     const arr: string[] = [];
     this.cards.map(item=>{
-      arr.push(item.cardValue)
+      arr.push(item.card as string)
     })
     const cards = JSON.stringify(arr);
     return cards;

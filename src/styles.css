@@ -4,30 +4,98 @@ body {
   background-color: gainsboro;
 }
 #dealer-score{
-  text-align: center;
+  position: absolute;
+  left: 50%;
 }
 #player-hands-div{
-  margin: 0 100px;
-  height: 50vh;
+  position: absolute;
+  left: 0;
+  top: 0;
   align-items: center;
+  justify-items: center;
+  width: 100%;
+  height: 100%;
   display: grid;
-  grid-template-columns: auto;
-  justify-content: space-around;
+  grid-template-columns: auto auto auto auto;
+}
+#player-hands-div .player-hand{
+  border: 1px solid beige;
+  width: 200px;
+  height: 250px;
+  border-radius: 10%;
 }
 .player-cards-div{
   display: grid;
   grid-template-columns: 50px 50px 50px 50px;
+  padding: 10px;
+  margin: 0 auto;
 }
+#player-hands-div .player-hand:nth-child(1){
+  transform: rotateZ(20deg) translateY(50px);
+}
+#player-hands-div .player-hand:nth-child(2){
+  transform: translateY(250px);
+}
+#player-hands-div .player-hand:nth-child(3){
+  transform: translateY(250px);
+}
+#player-hands-div .player-hand:nth-child(4){
+  transform: rotateZ(-20deg) translateY(50px);
+}
+.player-hand .tokenHand{
+  margin: 0 auto;
+}
+
+#card-template{
+  pointer-events: none;
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  align-items: center;
+  justify-items: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#card-template div{
+  width: 200px;
+  height: 250px;
+  border-radius: 10%;
+  background-color: rgba(0, 255, 26, 0.193);
+  z-index: -1;
+}
+/* #card-template div::after{
+  content: "";
+  position: absolute;
+  top: 167;
+  left: 45;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  border: 2px solid white;
+} */
+#card-template div:nth-child(1){
+  transform: rotateZ(20deg) translateY(50px);
+}
+#card-template div:nth-child(2){
+  transform: translateY(250px);
+}
+#card-template div:nth-child(3){
+  transform: translateY(250px);
+}
+#card-template div:nth-child(4){
+  transform: rotateZ(-20deg) translateY(50px);
+}
+
 #addBet-overlay{
+  z-index: 199;
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template:
-    "a a a a" 40px
-    "b c d e" 40px;
   align-items: center;
   justify-content: center;
 }
@@ -49,17 +117,41 @@ body {
   transform: translateY(-100px);
 }
 .hand-score{
-  margin: 0;
+  margin: 5px 0;
+  text-align: center;
+  font-size: 32px;
 }
 #player-action-overlay button{
   margin: 0 20px;
   font-size: 32px;
 }
-.addBet-btn{
+.tokens{
   font-size: 30px;
-  height: 120px;
-  width: 120px;
+  position: relative;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  border: 5px dashed white;
+  height: 100px;
+  width: 100px;
+  margin: 0 20px;
   border-radius: 50%;
+  background-color: blue;
+}
+
+.tokens::before{
+  content: "";
+  position: absolute;
+  left: 15;
+  top: 15;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+}
+.tokenHand::before{
+  left: 20;
+  top: 15;
 }
 
 #dealer-cards-div{
@@ -68,23 +160,14 @@ body {
   display: flex;
   justify-content: center;
 }
-span{
+.cardD{
   border: 1px solid black;
   background-color: whitesmoke;
+  /* background-image: url("./components/PNG-cards/10C.png"); */
   font-size: 32px;
-}
-.tokens{
-  height: 40px;
-  width: 40px;
-  margin: 0 auto;
-  background-color: red;
-  border: 3px dotted black;
-  border-radius: 50%;
-  padding: 20px 20px;
-  text-align: center;
-  line-height: 40px;
-  font-size: 30px;
-  color: white;
+  height: 124px;
+  width: 85px;
+  background-size: 100%;
 }
 /* testing stuff */
 @keyframes topViewAnimation {
@@ -153,9 +236,12 @@ span{
 #table-div{
   overflow: hidden;
   animation: topViewAnimation3 3s forwards paused;
-  height: 100%;
+  height: 100vh;
 }
+
+
 #div-wall{
+  height: 90%;
   transform-origin: bottom center;
   background-color: rgb(8, 88, 15);
   border: 50px solid rgb(93, 63, 12);
