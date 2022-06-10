@@ -3,54 +3,189 @@ body {
   margin: 0;
   background-color: gainsboro;
 }
-#dealer-score{
-  position: absolute;
-  left: 50%;
+@keyframes cardMoveAnimation {
+  from{
+    transform: translateX(1000px) translateY(-1000px)
+  }
+  to{
+    transform: translateX(0px) translateY(0px)
+} 
 }
-#player-hands-div{
+#testCard{
+  background-repeat: none;
+  background-size: 200px;
+  object-fit: none;
+  border-radius: 5%;
+  border: 2px solid black;
+  object-position: -3px -3px;
+  width: 123px;
+  height: 180px;
+  transform-origin: top left;
+  transform: scale(0.8);
+  animation: cardMoveAnimation 1s;
+}
+@keyframes totalAnimation {
+  from{
+    transform: translateY(0px)
+  }
+  to{
+    transform: translateY(85vh)
+} 
+}
+#total-cash{
   position: absolute;
   left: 0;
   top: 0;
+  border: 3px solid darkred;
+  background-color: darkgreen;
+  text-align: center;
+  border-radius: 30%;
+  animation: totalAnimation 2s forwards;
+}
+#total-cash p{
+  color: white;
+  margin: 0;
+  padding: 10px;
+  font-size: 25px;
+}
+#timer-div{
+  position: absolute;
+  width: 100%;
+  top: -50;
+  text-align: center;
+  display: block;
+}
+#timer-div h1{
+  background-color: black;
+  color: white;
+  width: 200px;
+  height: 40px;
+  margin: 0 auto;
+  padding: 5px;
+}
+#dealer-score{
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  font-size: 32px;
+  color: white;
+  text-align: center;
+}
+#player-hands-div{
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto auto auto;
   align-items: center;
   justify-items: center;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: auto auto auto auto;
+}
+.split-cards{
+  display: flex;
 }
 #player-hands-div .player-hand{
-  border: 1px solid beige;
   width: 200px;
-  height: 250px;
+  height: 210px;
   border-radius: 10%;
 }
 .player-cards-div{
   display: grid;
-  grid-template-columns: 50px 50px 50px 50px;
-  padding: 10px;
-  margin: 0 auto;
+  grid-template-columns: 50px 50px 50px;
+  grid-template-rows: 50px 150px;
+
+  padding: 5px;
 }
-#player-hands-div .player-hand:nth-child(1){
+#player-hands-div .split-cards:nth-child(1){
   transform: rotateZ(20deg) translateY(50px);
 }
-#player-hands-div .player-hand:nth-child(2){
-  transform: translateY(250px);
+#player-hands-div .split-cards:nth-child(2){
+  transform: translateY(230px);
 }
-#player-hands-div .player-hand:nth-child(3){
-  transform: translateY(250px);
-}
-#player-hands-div .player-hand:nth-child(4){
+#player-hands-div .split-cards:nth-child(3){
   transform: rotateZ(-20deg) translateY(50px);
 }
+
 .player-hand .tokenHand{
   margin: 0 auto;
 }
+#dealer-cards-div{
+  margin: 100px auto;
+  width: 82.4%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+}
+#select-hands-div{
+  position: absolute;
+  transform: translateY(-200px);
+  display: flex;
+}
+#addBet-overlay h3{
+  position: absolute;
+  transform: translateY(-300px);
+  font-size: 32px;
 
+}
+#select-hands-div button{
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 50px;
+  width: 70px;
+  height: 70px;
+  border-radius: 30%;
+  background-color: transparent;
+}
+@keyframes handNumAnimation {
+  from{
+    transform: scale(1)
+  }
+  to{
+    transform: scale(1.1)
+} 
+}
+#select-hands-div button:hover{
+  animation: handNumAnimation 0.3s forwards;
+}
+.hand-isSelected{
+  background-color: gold !important;
+  border: 3px solid white;
+}
+#card-stack{
+  position: absolute;
+  z-index: 99;
+  top: 50px;
+  right: 150px;
+  transform: rotateZ(40deg);
+  height: 124px;
+  width: 85px;
+  background-color: red;
+  background-image: url("cardback.jpg");
+  border: 1px solid black;
+  box-shadow: 1px 1px 1px white,
+    2px 2px 1px white,
+    3px 3px 1px gray,
+    4px 4px 1px white,
+    5px 5px 1px white,
+    6px 6px 1px gray,
+    7px 7px 1px white,
+    8px 8px 1px white,
+    9px 9px 1px gray,
+    10px 10px 1px white,
+    11px 11px 1px white,
+    12px 12px 1px gray,
+    13px 13px 1px white,
+    14px 14px 1px white,
+    15px 15px 1px gray,
+    
+    25px 25px 15px rgba(0,0,0,.3);
+}
 #card-template{
   pointer-events: none;
   position: absolute;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto auto auto;
   align-items: center;
   justify-items: center;
   left: 0;
@@ -65,16 +200,6 @@ body {
   background-color: rgba(0, 255, 26, 0.193);
   z-index: -1;
 }
-/* #card-template div::after{
-  content: "";
-  position: absolute;
-  top: 167;
-  left: 45;
-  width: 108px;
-  height: 108px;
-  border-radius: 50%;
-  border: 2px solid white;
-} */
 #card-template div:nth-child(1){
   transform: rotateZ(20deg) translateY(50px);
 }
@@ -82,9 +207,6 @@ body {
   transform: translateY(250px);
 }
 #card-template div:nth-child(3){
-  transform: translateY(250px);
-}
-#card-template div:nth-child(4){
   transform: rotateZ(-20deg) translateY(50px);
 }
 
@@ -125,6 +247,14 @@ body {
   margin: 0 20px;
   font-size: 32px;
 }
+@keyframes tokenAnimation2 {
+  from{
+    transform: scale(1.2);
+  }
+  to{
+    transform: scale(1);
+  }
+}
 .tokens{
   font-size: 30px;
   position: relative;
@@ -137,8 +267,22 @@ body {
   margin: 0 20px;
   border-radius: 50%;
   background-color: blue;
+  animation: tokenAnimation2 0.4s;
 }
-
+#ph{
+  border: 10px solid red;
+}
+@keyframes tokenAnimation {
+  from{
+    transform: scale(1);
+  }
+  to{
+    transform: scale(1.2);
+  }
+}
+.tokens:hover{
+  animation: tokenAnimation 0.4s forwards;
+}
 .tokens::before{
   content: "";
   position: absolute;
@@ -154,21 +298,7 @@ body {
   top: 15;
 }
 
-#dealer-cards-div{
-  margin: 100px;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-}
-.cardD{
-  border: 1px solid black;
-  background-color: whitesmoke;
-  /* background-image: url("./components/PNG-cards/10C.png"); */
-  font-size: 32px;
-  height: 124px;
-  width: 85px;
-  background-size: 100%;
-}
+
 /* testing stuff */
 @keyframes topViewAnimation {
   from{

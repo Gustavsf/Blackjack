@@ -38,7 +38,6 @@ function App() {
             <div></div>
             <div></div>
             <div></div>
-            <div></div>
           </div>
         </div>
         <div id="div-wall3"></div>
@@ -46,7 +45,6 @@ function App() {
       </div>     
     </div>
     </>
-    
   );
 }
 

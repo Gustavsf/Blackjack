@@ -1,10 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "../RootStore";
-import { Card } from "./Card";
 import { Hand, HandId } from "./Hand";
 import { Player } from "./Player";
 
-type SeatId = "0";
+type SeatId = "0" | "1" | "2";
 type betAmount = 10 | 20 | 40 | 80 | 100;
 type PlayerScore = {first: number, second: number}
 
@@ -26,9 +25,9 @@ export class Seat {
     const handIdArray: HandId[] = ["first", "second", "third", "fourth"];
     let otherHand: Hand;
     if(hand?.cards.length === 2){
-      let a = handIdArray[this.store.seats.seats[0].hands.length];
+      let a = handIdArray[this.hands.length];
       otherHand = hand.split(a);
-      otherHand.betAmount = this.store.seats.seats[0].bet!;
+      otherHand.betAmount = this.bet!;
       this.hands.push(otherHand);
       this.findHand(a)?.score;
     }    
@@ -42,7 +41,7 @@ export class Seat {
 
  public allHandsJSON() {
   const arr: string[][] = [];
-    this.store.seats.seats[0].hands.map(item=>{
+    this.hands.map(item=>{
       const arr2: string[] = []
       item.cards.map(item=>{
         arr2.push(item.card as string)
@@ -55,7 +54,7 @@ export class Seat {
 
   public allHandsScoreJSON() {
     const arr: PlayerScore[] = [];
-    this.store.seats.seats[0].hands.map(item=>{
+    this.hands.map(item=>{
       arr.push(item.score);
     })
     const handScore = JSON.stringify(arr);
@@ -64,7 +63,7 @@ export class Seat {
 
   public allHandsBetsJSON() {
     const arr: number[] = [];
-    this.store.seats.seats[0].hands.map(item=>{
+    this.hands.map(item=>{
       arr.push(item.bet);
     })
     const handBets = JSON.stringify(arr);
@@ -72,15 +71,11 @@ export class Seat {
   }
   public allHandsResultJSON() {
     const arr: string[] = [];
-    this.store.seats.seats[0].hands.map(item=>{
+    this.hands.map(item=>{
       arr.push(item.res);
     })
     const handResults = JSON.stringify(arr);
     return handResults;
-  }
-
-  public get state() {
-    return this.hands[0];
   }
 
   public set betAmount(bet: betAmount) {

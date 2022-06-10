@@ -1,9 +1,10 @@
 import * as React from 'react'
-
+import { Card } from "./Card";
+type PlayerScore = {first: number, second: number}
 
 interface Hand {
     playerCards: string[];
-    playerScore: number;
+    playerScore: PlayerScore;
     playerBet: number;
     handNum: number;
     isActive: boolean;
@@ -43,16 +44,13 @@ export const PlayerHand = (props: Hand) => {
         bgColor = "purple"
       }
     }
-
     return(
         <div className="player-hand" style={{boxShadow: shadow, border: border}}>
           <p style={{fontSize:"32px", position:"absolute", color:"white", transform:"translateY(-70px)"}}>{props.winState}</p>
-          <h2 className="hand-score">{props.playerScore}</h2>
+          <h2 className="hand-score">{props.playerScore.first}</h2>
           <div className="player-cards-div" id={id}>
             {props.playerCards.map(item=>{
-              //require(/images/2C.png) == 2C.15ebb3a4.png
-              //import img from ...
-              return <img className='cardD' key={item + Math.random()} src={"2C.15ebb3a4.png"}></img>
+              return Card(item);
             })}
           </div>
           <div className="tokens tokenHand" style={{backgroundColor: bgColor}}><p>{props.playerBet}</p></div>

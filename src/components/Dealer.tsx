@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Card } from "./Card";
 type DealerScore = {first: number, second: number}
 
 export const Dealer = () =>  {
@@ -16,8 +17,9 @@ export const Dealer = () =>  {
           setDealerScore(score);
         break;
       case "finalDealerDealing":
-          const cards: string[] = JSON.parse(smth[1])
-          setDealerCards(cards)
+          const cards: string[] = JSON.parse(smth[1]);
+          const filtered = cards.filter((e)=>{ return e !== "**" })
+          setDealerCards(filtered);
           const score2: number = JSON.parse(smth[2]);
           setDealerScore(score2);
         break;
@@ -34,13 +36,16 @@ export const Dealer = () =>  {
 
   return (
     <>
-    <h2 id='dealer-score'>
-      {dealerScore > 0 ? dealerScore : ""}
-    </h2>
-    <div id="dealer-cards-div">
-      {dealerCards.map(item=>{
-        return <div className='cardD' key={item + Math.random()}>{item}</div>
-      })}
+    <div id='dealer-hand'>
+      <h2 id='dealer-score'>
+        {dealerScore > 0 ? dealerScore : ""}
+      </h2>
+      <div id="dealer-cards-div">
+        {dealerCards.map(item=>{
+          return Card(item)
+        })}
+      </div>
+      <div id='card-stack'></div>
     </div>
     <div id='curved-div'></div>
     </>

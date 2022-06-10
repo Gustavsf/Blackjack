@@ -19,9 +19,7 @@ export class Hand {
   }
 
   public addCard(card: Card): void {
-    if(this.store.phase.currentPhase === "Dealing"){
       this.cards.push(card);
-    }
   }
 
   public get score() {

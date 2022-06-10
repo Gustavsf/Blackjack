@@ -7,7 +7,7 @@ import { dealPlayer } from "./phase/DealingPhase";
 import { gameResult } from "./phase/GameResultPhase";
 import { dealDealerFinal } from "./phase/FinalDealerPhase";
 type betAmount = 10 | 20 | 40 | 80 | 100;
-//card design
+
 //card animations
 //win animation
 //second value render
@@ -15,6 +15,7 @@ type betAmount = 10 | 20 | 40 | 80 | 100;
 //timer render
 
 export class BlackJack {
+  private handCount = 1;
   public constructor(
     private readonly store: RootStore,
   ){
@@ -38,6 +39,10 @@ export class BlackJack {
         case "stayOnClick":
             this.stayOnClick();
           break;
+        case "handcount":
+            const num = parseInt(part[1]);
+            this.handCount = num;
+          break;
         default:
           break;
       }
@@ -46,7 +51,7 @@ export class BlackJack {
 
   public async start(){
       startGame(this.store);
-
+      postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
       addBets(this.store);
       postMessage("addBets");
       await new Promise((resolve) =>{
@@ -54,32 +59,36 @@ export class BlackJack {
           const full = event.data as string;
           let part = full.split("-");
           if(part[0] === "addBetOnClick"){
-            window.setTimeout(resolve, 1000)
+            window.setTimeout(resolve, 10)
           }
         })
-      }) 
+      })
+      postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
       
-      dealDealer(this.store);
-      postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
-      await this.delay(2000);
-
       if(this.store.seats.seats[0].bet !== undefined){
         dealPlayer(this.store);
-        postMessage("dealPlayer-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + 
-        "-" + this.store.seats.seats[0].allHandsBetsJSON());
+        postMessage("dealPlayer-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON())
+        await this.delay(1000);
+        dealDealer(this.store);
+        postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
+        await this.delay(2000);
+        postMessage("timer-" + 10)
         
         await new Promise((resolve) =>{
           window.addEventListener('message', (event) => {
             if(event.data === "playerAction"){
               clearTimeout(timeout)
               if(this.lastActiveHand()){
-                timeout = window.setTimeout(resolve, 100000000)
+                timeout = window.setTimeout(resolve, 10000)
+                postMessage("timer-" + 10)
               } else {
                 timeout = window.setTimeout(resolve, 100)
+                postMessage("timer-" + 0)
               }
             }
           })
           let timeout = window.setTimeout(resolve, 10000)
+          postMessage("timer-" + 10)
         }) 
       }
 
@@ -87,7 +96,7 @@ export class BlackJack {
       postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
       
       await this.delay(1000);
-      postMessage("gameResults-" + this.store.seats.seats[0].allHandsResultJSON());
+      postMessage("gameResults-" + this.store.seats.seatResultJSON());
 
       await this.delay(3000);
       gameResult(this.store);
@@ -103,50 +112,66 @@ export class BlackJack {
     if(hand && hand.isDone === false){
       const rand = getRandomCard()
       hand.addCard(rand);
-      postMessage("addPlayerCard-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + 
-        "-" + this.store.seats.seats[0].allHandsBetsJSON());
+      postMessage("addPlayerCard-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON());
     }
   }
   private splitOnClick() {
-    const seat = this.store.seats.seats[0];
+    const seat = this.lastActiveSeat();
     const hand = this.lastActiveHand();
-    if(hand && hand.isDone === false && seat.hands.length < 4){
+    if(seat)
+    if(hand && hand.isDone === false && seat.hands.length < 3){
       seat.split(hand.id);
-      postMessage("splitPlayerCards-" + this.store.seats.seats[0].allHandsJSON() + "-" + this.store.seats.seats[0].allHandsScoreJSON() + "-" + this.store.seats.seats[0].allHandsBetsJSON())
+      postMessage("splitPlayerCards-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON());
       this.lastActiveHand();
     }
   }
   private doubleOnClick(){
-    const firstBet = this.store.seats.seats[0].bet;
+    const firstBet = this.lastActiveSeat()!.bet;
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false){
       const doubled = firstBet! * 2;
       hand.betAmount = doubled;
       this.addCardOnClick();
       hand.done();
-      postMessage("doublePlayerCards-" + this.store.seats.seats[0].allHandsBetsJSON())
+      postMessage("doublePlayerCards-" + this.store.seats.seatBetJSON())
       this.lastActiveHand();
     }
   }
   private lastActiveHand(){
-    const hands = this.store.seats.seats[0].hands;
-    const handsLenght = hands.length;
-    for (let i = handsLenght; i > 0; i--) {
-      if (hands[i-1].isDone === false) {
-        postMessage("activeHand-" + (i-1))
-        return hands[i-1];
+    const seats = this.store.seats.seats;
+    for (let i = seats.length; i > 0; i--) {
+      for (let z = seats[i-1].hands.length; z > 0; z--) {
+        if (seats[i-1].hands[z-1].isDone === false && seats[i-1].hands[z-1].cards.length > 0) {
+          postMessage("activeHand-" + (z-1) + "-" + seats[i-1].id);
+          return seats[i-1].hands[z-1];
+        }
+      }
+    }
+  }
+  private lastActiveSeat(){
+    const seats = this.store.seats.seats;
+    for (let i = seats.length; i > 0; i--) {
+      for (let z = seats[i-1].hands.length; z > 0; z--) {
+        if (seats[i-1].hands[z-1].isDone === false && seats[i-1].hands[z-1].cards.length > 0) {
+          return seats[i-1];
+        }
       }
     }
   }
   private clearHands(){
-    const seat = this.store.seats.seats[0];
-    seat.clearAllHands();
+    const seats = this.store.seats.seats;
+    seats.map(item=>{
+      item.clearAllHands();
+    })
     this.store.dealer.clearHand();
   }
   private addBetOnClick(amount: string){
     const num = parseInt(amount) as betAmount;
-    this.store.seats.seats[0].betAmount = num;
-    this.store.seats.seats[0].hands[0].betAmount = num;
+    const seats = this.store.seats.seats;
+    for(let i = 0; i< this.handCount;i++){
+      seats[i].betAmount = num;
+      seats[i].hands[0].betAmount = num;
+    }
   }
   private stayOnClick(){
     const hand = this.lastActiveHand();
