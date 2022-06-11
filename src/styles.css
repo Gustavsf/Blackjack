@@ -85,6 +85,7 @@ body {
 .split-cards{
   display: flex;
 }
+
 #player-hands-div .player-hand{
   width: 200px;
   height: 210px;
@@ -117,24 +118,87 @@ body {
   display: flex;
   justify-content: center;
 }
-#select-hands-div{
-  position: absolute;
-  transform: translateY(-200px);
-  display: flex;
+.select-tokens-div{
+  z-index: 999;
 }
-#addBet-overlay h3{
+.token-div-fake{
+  width: 403px;
+  height: 211px;
+}
+.select-tokens-div .token-div-fake:nth-child(1){
+  transform: rotateZ(20deg) translateY(-120px) scale(0.8);
+}
+.select-tokens-div .token-div-fake:nth-child(2){
+  transform: translateY(80px) scale(0.8);
+}
+.select-tokens-div .token-div-fake:nth-child(3){
+  transform: rotateZ(-20deg) translateY(-120px) scale(0.8);
+}
+.token-div .tokens{
+  pointer-events: all;
+  margin: 0;
+}
+.select-tokens-div .token-div:nth-child(1){
+  transform: rotateZ(20deg) translateY(-120px) scale(0.8);
+}
+.select-tokens-div .token-div:nth-child(2){
+  transform: translateY(80px) scale(0.8);
+}
+.select-tokens-div .token-div:nth-child(3){
+  transform: rotateZ(-20deg) translateY(-120px) scale(0.8);
+}
+.select-tokens-div{
+  pointer-events: none;
   position: absolute;
-  transform: translateY(-300px);
-  font-size: 32px;
-
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-items: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#bets-ready-btn{
+    z-index: 999;
+    width: 200px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 15%;
+    font-size: 32px;
+    font-weight: bold;
+}
+#bets-ready-btn:hover{
+  font-size: 40px;
+}
+#select-hands-div{
+  pointer-events: all;
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-items: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#select-hands-div button:nth-child(1){
+  transform: rotateZ(20deg) translateY(50px);
+}
+#select-hands-div button:nth-child(2){
+  transform: translateY(250px);
+}
+#select-hands-div button:nth-child(3){
+  transform: rotateZ(-20deg) translateY(50px);
 }
 #select-hands-div button{
   font-size: 32px;
   font-weight: bold;
   margin: 0 50px;
-  width: 70px;
-  height: 70px;
-  border-radius: 30%;
+  width: 250px;
+  height: 250px;
+  border-radius: 10%;
   background-color: transparent;
 }
 @keyframes handNumAnimation {
@@ -145,13 +209,15 @@ body {
     transform: scale(1.1)
 } 
 }
-#select-hands-div button:hover{
-  animation: handNumAnimation 0.3s forwards;
-}
+
 .hand-isSelected{
-  background-color: gold !important;
+  background-color: rgba(255, 217, 0, 0.523) !important;
   border: 3px solid white;
 }
+.token-isSelected{
+  background-color: red;
+}
+
 #card-stack{
   position: absolute;
   z-index: 99;
@@ -194,7 +260,7 @@ body {
   height: 100%;
 }
 #card-template div{
-  width: 200px;
+  width: 250px;
   height: 250px;
   border-radius: 10%;
   background-color: rgba(0, 255, 26, 0.193);
@@ -209,22 +275,10 @@ body {
 #card-template div:nth-child(3){
   transform: rotateZ(-20deg) translateY(50px);
 }
-
-#addBet-overlay{
-  z-index: 199;
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  display: grid;
-  align-items: center;
-  justify-content: center;
-}
-#addBet-overlay h2{
-  position: absolute;
-  font-size: 42px;
-  transform: translateY(-100px);
+.token-onselect{
+  animation: none;
+  transform: translateY(-50px);
+  z-index: 99;
 }
 #player-action-overlay{
   position: absolute;

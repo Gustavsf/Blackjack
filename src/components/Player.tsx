@@ -6,9 +6,13 @@ import { Cash } from "./TotalCash"
 import { Timer } from "./Timer"
 
 type PlayerScore = {first: number, second: number}
-type BetOverlay = "none" | "flex";
+type BetOverlay = "none" | "grid";
 type ActionOverlay = "none" | "grid";
-
+type bets = {
+  first: string,
+  second: string,
+  third: string
+}
 export const Player = () =>  {
   const [cards, setCards] = React.useState<string[][][]>([])
   const [scores, setScores] = React.useState<PlayerScore[][]>([])
@@ -20,6 +24,7 @@ export const Player = () =>  {
   const [activeHand, setActiveHand] = React.useState<[number, number]>([0, 0])
   const [addBetOverlay, setAddBetOverlay] = React.useState<BetOverlay>("none")
   const [actionOverlay, setActionOverlay] = React.useState<ActionOverlay>("none")
+  const [emptySeats, setEmptySeats] = React.useState<bets>()
 
   React.useEffect(()=>{
     let timeout = setTimeout(()=>{
@@ -37,9 +42,10 @@ export const Player = () =>  {
     let smth = full.split("-");
     switch (smth[0]) {
       case "addBets":
-          setAddBetOverlay('flex')
+          setAddBetOverlay("grid")
         break;
       case "dealDealer":
+        setAddBetOverlay('none')
         break;
       case "dealPlayer":
           setAddBetOverlay('none')
@@ -58,16 +64,20 @@ export const Player = () =>  {
           addToState(smth[1], smth[2], smth[3])
         break;
       case "doublePlayerCards":
-        const betsD: number[][] = JSON.parse(smth[1]);
-        setBets(betsD);
+          const betsD: number[][] = JSON.parse(smth[1]);
+          setBets(betsD);
         break;
       case "totalCash":
-        const moneyNum: number = JSON.parse(smth[1]);
-        setMoney(moneyNum);
+          const moneyNum: number = JSON.parse(smth[1]);
+          setMoney(moneyNum);
         break;
       case "timer":
-        const time: number = JSON.parse(smth[1]);
-        setTimer(time)
+          const time: number = JSON.parse(smth[1]);
+          setTimer(time)
+        break;
+      case "addBetOnClick":
+          const bet: bets = JSON.parse(smth[1]);
+          setEmptySeats(bet)
         break;
       case "finalDealerDealing":
           setActionOverlay('none')
@@ -102,9 +112,9 @@ export const Player = () =>  {
 
   return (
     <>
-      <PlayerHands cards={cards} scores={scores} results={results} bets={bets} activeHand={activeHand}/>
-      <AddBetOverlay addBetOverlay = {addBetOverlay}/>
-      <PlayerActionOverlay actionOverlay= {actionOverlay} />
+      <PlayerHands cards={cards} scores={scores} results={results} bets={bets} activeHand={activeHand} emptySeats={emptySeats}/>
+      <AddBetOverlay addBetOverlay={addBetOverlay}/>
+      <PlayerActionOverlay actionOverlay= {actionOverlay}/>
       <Cash money={money}/>
       <Timer seconds={timer} display={'block'}/>
     </>

@@ -7,15 +7,17 @@ import { dealPlayer } from "./phase/DealingPhase";
 import { gameResult } from "./phase/GameResultPhase";
 import { dealDealerFinal } from "./phase/FinalDealerPhase";
 type betAmount = 10 | 20 | 40 | 80 | 100;
-
+type bets = {
+  first: string,
+  second: string,
+  third: string
+}
 //card animations
 //win animation
 //second value render
-//total cash render
-//timer render
 
 export class BlackJack {
-  private handCount = 1;
+  private handCount: number[] = [1];
   public constructor(
     private readonly store: RootStore,
   ){
@@ -30,7 +32,7 @@ export class BlackJack {
             this.splitOnClick();
           break;
         case "addBetOnClick":
-              const amount = part[1];
+              const amount:bets = JSON.parse(part[1]);
               this.addBetOnClick(amount);
           break;
         case "doubleOnClick":
@@ -41,7 +43,12 @@ export class BlackJack {
           break;
         case "handcount":
             const num = parseInt(part[1]);
-            this.handCount = num;
+            if(this.handCount.includes(num)){
+              const index = this.handCount.indexOf(num);
+              this.handCount.splice(index, 1)
+            }else {
+              this.handCount.push(num);
+            }
           break;
         default:
           break;
@@ -64,33 +71,33 @@ export class BlackJack {
         })
       })
       postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
-      
-      if(this.store.seats.seats[0].bet !== undefined){
-        dealPlayer(this.store);
-        postMessage("dealPlayer-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON())
-        await this.delay(1000);
-        dealDealer(this.store);
-        postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
-        await this.delay(2000);
-        postMessage("timer-" + 10)
+
+      dealPlayer(this.store);
+      postMessage("dealPlayer-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON())
+      this.lastActiveHand();
+      await this.delay(1000);
+      dealDealer(this.store);
+      postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
+      await this.delay(2000);
+      postMessage("timer-" + 10)
         
-        await new Promise((resolve) =>{
-          window.addEventListener('message', (event) => {
-            if(event.data === "playerAction"){
+      await new Promise((resolve) =>{
+        window.addEventListener('message', (event) => {
+          if(event.data === "playerAction"){
               clearTimeout(timeout)
-              if(this.lastActiveHand()){
-                timeout = window.setTimeout(resolve, 10000)
-                postMessage("timer-" + 10)
-              } else {
-                timeout = window.setTimeout(resolve, 100)
-                postMessage("timer-" + 0)
-              }
+            if(this.lastActiveHand()){
+              timeout = window.setTimeout(resolve, 10000)
+              postMessage("timer-" + 10)
+            } else {
+              timeout = window.setTimeout(resolve, 100)
+              postMessage("timer-" + 0)
             }
-          })
-          let timeout = window.setTimeout(resolve, 10000)
-          postMessage("timer-" + 10)
-        }) 
-      }
+          }
+        })
+        let timeout = window.setTimeout(resolve, 10000)
+        postMessage("timer-" + 10)
+      }) 
+      
 
       dealDealerFinal(this.store);
       postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
@@ -165,12 +172,29 @@ export class BlackJack {
     })
     this.store.dealer.clearHand();
   }
-  private addBetOnClick(amount: string){
-    const num = parseInt(amount) as betAmount;
+  private addBetOnClick(amount: bets){
+    const num = amount;
     const seats = this.store.seats.seats;
-    for(let i = 0; i< this.handCount;i++){
-      seats[i].betAmount = num;
-      seats[i].hands[0].betAmount = num;
+    for(let i = 0; i<3;i++){
+      if(i === 0){
+        const a = parseInt(num.first);
+        if(a > 0){
+          seats[i].bet = a as betAmount
+          seats[i].hands[0].bet = a as betAmount;
+        }
+      } else if(i === 1){
+        const a = parseInt(num.second);
+        if(a > 0){
+          seats[i].bet = a as betAmount
+          seats[i].hands[0].bet = a as betAmount;
+        }
+      } else if(i === 2){
+        const a = parseInt(num.third);
+        if(a > 0){
+          seats[i].bet = a as betAmount
+          seats[i].hands[0].bet = a as betAmount;
+        }
+      }
     }
   }
   private stayOnClick(){
