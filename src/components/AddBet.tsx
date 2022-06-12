@@ -4,10 +4,8 @@ interface BetProps {
     addBetOverlay: BetOverlay
 }
 export const AddBetOverlay = (props: BetProps) => {
-    //@ts-ignore
-    const handRef: React.RefObject<HTMLDivElement> = React.useRef();
-    //@ts-ignore
-    const tokenRef: React.RefObject<HTMLDivElement> = React.useRef();
+    const handRef: React.RefObject<HTMLDivElement> = React.useRef(null);
+    const tokenRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const [stat, setStat] = React.useState<number[]>([1,2,3]);
     const [activeHands, setActiveHands] = React.useState<number[]>([1]);
 
@@ -84,9 +82,9 @@ export const AddBetOverlay = (props: BetProps) => {
           <button id='bets-ready-btn' onClick={()=>handleClick("sendBets")}>READY</button>
           <div className='player-bet-div'>
             <div id='select-hands-div' ref={handRef}>
-              <button onClick={()=>handleClick("handCount-"+1)}>I</button>
-              <button onClick={()=>handleClick("handCount-"+2)}>II</button>
-              <button onClick={()=>handleClick("handCount-"+3)}>III</button>
+              <button key={1} onClick={()=>handleClick("handCount-"+1)}>I</button>
+              <button key={2} onClick={()=>handleClick("handCount-"+2)}>II</button>
+              <button key={3} onClick={()=>handleClick("handCount-"+3)}>III</button>
             </div>
             <div className='select-tokens-div'>
             {stat.map(num=>{
@@ -94,7 +92,7 @@ export const AddBetOverlay = (props: BetProps) => {
               if(activeHands.includes(num)){
                 disp = "relative"
                 return(
-                  <div className="token-div" ref={tokenRef} style={{display:disp}} >
+                  <div className="token-div" key={Math.random()+num} ref={tokenRef} style={{display:disp}} >
                     <button className="tokens" style={{backgroundColor:"orange"}} onClick={(e)=>{
                       handleClick("10-"+num)
                       tokenOnSelect(e)
@@ -118,7 +116,7 @@ export const AddBetOverlay = (props: BetProps) => {
                   </div>
                 )
               } else {
-                return <div className="token-div-fake"></div>
+                return <div key={Math.random() + disp} className="token-div-fake"></div>
               }
             })} 
             </div>

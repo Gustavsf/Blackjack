@@ -30,15 +30,26 @@ export const Dealer = () =>  {
       default:
         break;
   }
-  }, []) 
-
+  }, [])
+  let otherScore: number = dealerScore 
+  const score = () =>{
+    if(dealerScore > 21){
+      if(dealerCards.includes("AS")
+      || dealerCards.includes("AC")
+      || dealerCards.includes("AH")
+      || dealerCards.includes("AD")){
+        otherScore = dealerScore - 10;
+      }
+    }
+  }
+  score();
   window.addEventListener('message', handleMessage);
 
   return (
     <>
     <div id='dealer-hand'>
       <h2 id='dealer-score'>
-        {dealerScore > 0 ? dealerScore : ""}
+        {dealerScore > 0 ? otherScore : ""}
       </h2>
       <div id="dealer-cards-div">
         {dealerCards.map(item=>{

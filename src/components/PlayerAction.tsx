@@ -33,6 +33,7 @@ export const PlayerActionOverlay = (props: BetProps) => {
         <div id="player-action-overlay" style={{display: props.actionOverlay}}>
             <button id="hit-btn" onClick={()=>handleClick("hit")}>Hit</button>
             <button id="split-btn" onClick={()=>handleClick("split")}>Split</button>
+            <div></div>
             <button id="stay-btn" onClick={()=>handleClick("stay")}>Stay</button>
             <button id="double-btn" onClick={()=>handleClick("double")}>Double</button>
         </div>

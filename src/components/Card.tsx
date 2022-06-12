@@ -45,5 +45,5 @@ export const Card = (item: string) =>{
       }
     const split = item.split("");
     const cords = getCardPos(split[0], split[1])
-    return <img id='testCard' key={cords} src={cardSpriteSheet} style={{objectPosition:cords}}></img>
+    return <img id='testCard' key={cords + Math.random} src={cardSpriteSheet} style={{objectPosition:cords}}></img>
 }

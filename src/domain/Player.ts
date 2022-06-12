@@ -4,7 +4,7 @@ type betAmount = 10 | 20 | 40 | 80 | 100;
 
 export class Player {
   public readonly name: string;
-  public totalAmount: number = 500;
+  public totalAmount: number = 1000;
 
   public constructor(
     name: string,

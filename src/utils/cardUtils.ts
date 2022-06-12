@@ -4,12 +4,14 @@ import type { Value } from "../domain/Card";
 import type { CardType } from "../domain/Card";
 import { RootStore } from "../RootStore";
 
+
 export function getRandomCard(): Card{
   const cardValues: Value[] = 
   ["2", "3", "4", "5", "6", "7", "8", 
   "9","T", "J", "Q", "K", "A"];
   const cardSuits: Suit[] = 
   ["S", "C", "H", "D"];
+  
   const rand1 = getRandomInt(0, 13);
   const rand2 = getRandomInt(0, 4);
 
@@ -18,10 +20,36 @@ export function getRandomCard(): Card{
   const newCard = new Card(cardType);
   return newCard;
 }
+export function fillDeck(){
+  const CARDS: Card[] = []
+  const cardValues: Value[] = 
+  ["2", "3", "4", "5", "6", "7", "8", 
+  "9","T", "J", "Q", "K", "A"];
+  const cardSuits: Suit[] = 
+  ["S", "C", "H", "D"];
+  cardValues.map((v)=>{
+    cardSuits.map((s)=>{
+      const cardType: CardType = `${v}${s}`;
+      const newCard = new Card(cardType);
+
+      CARDS.push(newCard)
+    })
+  })
+  shuffleArray(CARDS)
+  return CARDS
+}
 function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min);
+}
+function shuffleArray(array: Card[]) {
+  for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
 }
 
 export function calculateScoreFromCards(cards: Card[]) {

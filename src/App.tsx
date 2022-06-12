@@ -4,6 +4,7 @@ import { Dealer } from "./components/Dealer"
 import "./styles.css";
 import { RootStore } from "./RootStore";
 import { BlackJack } from "./domain/BlackJack"
+import { Canvas } from "../src/components/Canvas"
 import * as React from 'react'
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
     <div className="App">
       <div id="title-div">
         <h1 id="bj-title">BlackJack</h1>
-        <button onClick={handleClick}>Start</button>
+        <button id="start-btn" onClick={handleClick}>Play</button>
       </div>
       <div id="table-div">
         <div id="div-wall">

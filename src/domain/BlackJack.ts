@@ -1,11 +1,13 @@
 import { RootStore } from "../RootStore";
 import { getRandomCard } from "../utils/cardUtils";
+import { fillDeck } from "../utils/cardUtils";
 import { startGame } from "./phase/BetsClosedPhase";
 import { addBets } from "./phase/BetsOpenPhase";
 import { dealDealer } from "./phase/DealerDealingPhase";
 import { dealPlayer } from "./phase/DealingPhase";
 import { gameResult } from "./phase/GameResultPhase";
 import { dealDealerFinal } from "./phase/FinalDealerPhase";
+import { Card } from "./Card";
 type betAmount = 10 | 20 | 40 | 80 | 100;
 type bets = {
   first: string,
@@ -13,11 +15,13 @@ type bets = {
   third: string
 }
 //card animations
-//win animation
 //second value render
+//remove cash aat bet
 
 export class BlackJack {
   private handCount: number[] = [1];
+  private cards: Card[] = fillDeck();
+
   public constructor(
     private readonly store: RootStore,
   ){
@@ -57,6 +61,9 @@ export class BlackJack {
   }
 
   public async start(){
+      if(this.cards.length < 30){
+        this.cards = fillDeck();
+      }
       startGame(this.store);
       postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
       addBets(this.store);
@@ -72,13 +79,12 @@ export class BlackJack {
       })
       postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
 
-      dealPlayer(this.store);
+      dealPlayer(this.store, this.cards);
       postMessage("dealPlayer-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON())
       this.lastActiveHand();
       await this.delay(1000);
       dealDealer(this.store);
       postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
-      await this.delay(2000);
       postMessage("timer-" + 10)
         
       await new Promise((resolve) =>{
@@ -97,28 +103,28 @@ export class BlackJack {
         let timeout = window.setTimeout(resolve, 10000)
         postMessage("timer-" + 10)
       }) 
-      
 
       dealDealerFinal(this.store);
       postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
-      
+
       await this.delay(1000);
-      postMessage("gameResults-" + this.store.seats.seatResultJSON());
+      postMessage("gameResults-" + this.store.seats.seatResultJSON() + "-" + this.store.seats.seatBetJSON());
 
-      await this.delay(3000);
+      await this.delay(3500);
       gameResult(this.store);
+      postMessage('totalCash-'+this.store.seats.seats[0].player.totalAmount)
 
-      await this.delay(3000);
+      await this.delay(1000);
       postMessage("cleanup");
-
       this.clearHands();
       this.start();
   }
   private addCardOnClick() {
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false){
-      const rand = getRandomCard()
-      hand.addCard(rand);
+      if(this.cards){
+        hand.addCard(this.cards.pop() as Card);
+      }
       postMessage("addPlayerCard-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON());
     }
   }
@@ -136,6 +142,9 @@ export class BlackJack {
     const firstBet = this.lastActiveSeat()!.bet;
     const hand = this.lastActiveHand();
     if(hand && hand.isDone === false){
+      const chair = this.lastActiveSeat()
+      if(chair)
+      chair.player.totalAmount -= firstBet as number
       const doubled = firstBet! * 2;
       hand.betAmount = doubled;
       this.addCardOnClick();
@@ -179,18 +188,21 @@ export class BlackJack {
       if(i === 0){
         const a = parseInt(num.first);
         if(a > 0){
+          seats[0].player.totalAmount -= a
           seats[i].bet = a as betAmount
           seats[i].hands[0].bet = a as betAmount;
         }
       } else if(i === 1){
         const a = parseInt(num.second);
         if(a > 0){
+          seats[0].player.totalAmount -= a
           seats[i].bet = a as betAmount
           seats[i].hands[0].bet = a as betAmount;
         }
       } else if(i === 2){
         const a = parseInt(num.third);
         if(a > 0){
+          seats[0].player.totalAmount -= a
           seats[i].bet = a as betAmount
           seats[i].hands[0].bet = a as betAmount;
         }

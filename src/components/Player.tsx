@@ -4,6 +4,7 @@ import { PlayerActionOverlay } from "./PlayerAction"
 import { PlayerHands } from "./AllPlayerHands"
 import { Cash } from "./TotalCash"
 import { Timer } from "./Timer"
+import { Canvas } from "./Canvas"
 
 type PlayerScore = {first: number, second: number}
 type BetOverlay = "none" | "grid";
@@ -13,6 +14,7 @@ type bets = {
   second: string,
   third: string
 }
+
 export const Player = () =>  {
   const [cards, setCards] = React.useState<string[][][]>([])
   const [scores, setScores] = React.useState<PlayerScore[][]>([])
@@ -21,10 +23,14 @@ export const Player = () =>  {
   const [money, setMoney] = React.useState<number>(0)
   const [timer, setTimer] = React.useState<number>(0)
 
+  const [totalWin, setTotalWin] = React.useState<number>(0)
   const [activeHand, setActiveHand] = React.useState<[number, number]>([0, 0])
   const [addBetOverlay, setAddBetOverlay] = React.useState<BetOverlay>("none")
   const [actionOverlay, setActionOverlay] = React.useState<ActionOverlay>("none")
   const [emptySeats, setEmptySeats] = React.useState<bets>()
+  const [winAnim, setWinAnim] = React.useState<boolean>(false)
+  
+  const winRef: React.RefObject<HTMLDivElement> = React.useRef(null);
 
   React.useEffect(()=>{
     let timeout = setTimeout(()=>{
@@ -84,13 +90,18 @@ export const Player = () =>  {
         break;
       case "gameResults":
         const resultArr: string[][] = JSON.parse(smth[1]);
+        const betsArr: number[][] = JSON.parse(smth[2]);
         setResults(resultArr);
+        calcBet(resultArr, betsArr)
         break;
       case "cleanup":
           setCards([]);
           setScores([]);
           setBets([]);
           setResults([]);
+          setTotalWin(0);
+          if(winRef.current)
+          winRef.current.style.display = "none"
         break;
       default:
         break;
@@ -107,11 +118,51 @@ export const Player = () =>  {
         setBets(betsArr);
       }
   }
+  const calcBet = (arr: string[][], betA: number[][]) =>{
+    let hasWinner = false;
+    let totalWin = 0;
+    arr.map((item, i)=>{
+      item.map((str, z)=>{
+        if(str === "Win"){
+          hasWinner = true;
+          const num = betA[i][z]
+          totalWin += num * 2;
+        }
+      })
+    })
+    const moveToCash = [
+      { transform: 'translate(0vw, 0vh)',
+        opacity: '1'         
+      },
+      { transform: 'translate(-50vw, 80vh)',
+        opacity: '0'
+     }
+    ];
+    const timing = {
+      duration: 1000,
+      iterations: 1,
+    }
+    setTimeout(()=>{
+      if(winRef.current && winRef.current.innerHTML !== "0")
+      if(hasWinner){
+        winRef.current.style.display = "block"
+        setWinAnim(true)
+        setTimeout(()=>{
+        winRef.current?.animate(moveToCash, timing)
+        },1000)
+      }
+      
+    },2000)
+    setTotalWin(totalWin);
+    setWinAnim(false)
+  }
  
   window.addEventListener('message', handleMessage);
 
   return (
     <>
+      <Canvas shouldRender={winAnim}/>
+      <h1 id='total-win' ref={winRef} style={{position: "absolute", display: "none"}}>WON: {totalWin}</h1>
       <PlayerHands cards={cards} scores={scores} results={results} bets={bets} activeHand={activeHand} emptySeats={emptySeats}/>
       <AddBetOverlay addBetOverlay={addBetOverlay}/>
       <PlayerActionOverlay actionOverlay= {actionOverlay}/>
