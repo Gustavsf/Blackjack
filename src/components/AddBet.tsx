@@ -1,4 +1,7 @@
 import * as React from 'react'
+import {Howl} from 'howler';
+const alarm = require("../sounds/token-sound.wav");
+
 type BetOverlay = "none" | "grid";
 interface BetProps {
     addBetOverlay: BetOverlay
@@ -34,7 +37,11 @@ export const AddBetOverlay = (props: BetProps) => {
         tokens[i].classList.remove("token-onselect")
       }
     }
+    let sound = new Howl({
+      src: [alarm]
+    });
     const tokenOnSelect = (e: any) => {
+      sound.play();
       const btn = e.currentTarget as HTMLButtonElement
       btn.classList.add("token-onselect")
     }

@@ -12,14 +12,12 @@ interface Hand {
 }
 
 export const PlayerHand = (props: Hand) => {
-    //@ts-ignore
-    const tokenRef: React.RefObject<HTMLDivElement> = React.useRef();
+    const tokenRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const id = "hand-" + props.handNum;
     let border: string = "";
     let shadow: string = "";
     let bgColor: string = "";
     
-
     if(props.isActive){
       shadow = "rgb(135, 255, 0) 0px 30px 100px -10px";
     }
@@ -30,34 +28,31 @@ export const PlayerHand = (props: Hand) => {
         const pos = tokenRef.current.getBoundingClientRect();
         const widthRatio = window.screen.width / pos.x;
         tokenRef.current.style.position = "absolute"
-        let newspaperSpinning = [
+        let tokenMove = [
           { transform: 'translate(0vw, 0vh) rotate(0deg) scale(1)' },
           { transform: 'translate(40vw, -70vh) rotate(360deg) scale(1.5)' }
         ];
         if(widthRatio > 10){
-          //left
         } else if(widthRatio < 1.9){
-          //right
-          newspaperSpinning = [
+          tokenMove = [
             { transform: 'translate(0vw, 0vh) rotate(0deg) scale(1)' },
             { transform: 'translate(-40vw, -70vh) rotate(360deg) scale(1.5)' }
           ];
         }else {
-          //mid
-          newspaperSpinning = [
+          tokenMove = [
             { transform: 'translateY(0vh) rotate(0deg) scale(1)' },
             { transform: 'translateY(-50vh) rotate(360deg) scale(1.5)' }
           ];
         }
-        const newspaperTiming = {
-          duration: 2000,
+        const tokenMoveTiming = {
+          duration: 1200,
           iterations: 1,
         }
-        tokenRef.current.animate(newspaperSpinning, newspaperTiming);
+        tokenRef.current.animate(tokenMove, tokenMoveTiming);
         setTimeout(()=>{
           if(tokenRef.current)
           tokenRef.current.style.display = "none"
-        }, 1800)
+        }, 1000)
         }
       } else if (props.winState === "Lose"){
         border = "2px solid red"

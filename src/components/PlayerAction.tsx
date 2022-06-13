@@ -1,4 +1,6 @@
 import * as React from 'react'
+import {Howl} from 'howler';
+const alarm = require("../sounds/card-place-sound.wav");
 type ActionOverlay = "none" | "grid";
 
 interface BetProps {
@@ -6,11 +8,17 @@ interface BetProps {
 }
 
 export const PlayerActionOverlay = (props: BetProps) => {
+  let sound = new Howl({
+    src: [alarm]
+  });
+  
     const handleClick = React.useCallback((arg: string, count = 0) => {
         switch (arg) {
           case "hit":
               postMessage("addCardOnClick");
               postMessage("playerAction");
+              sound.play();
+
             break;
           case "split":
               postMessage("splitOnClick");

@@ -5,6 +5,8 @@ import { PlayerHands } from "./AllPlayerHands"
 import { Cash } from "./TotalCash"
 import { Timer } from "./Timer"
 import { Canvas } from "./Canvas"
+import {Howl} from 'howler';
+const alarm = require("../sounds/coin-sound.wav");
 
 type PlayerScore = {first: number, second: number}
 type BetOverlay = "none" | "grid";
@@ -14,7 +16,9 @@ type bets = {
   second: string,
   third: string
 }
-
+var sound = new Howl({
+  src: [alarm]
+});
 export const Player = () =>  {
   const [cards, setCards] = React.useState<string[][][]>([])
   const [scores, setScores] = React.useState<PlayerScore[][]>([])
@@ -42,7 +46,7 @@ export const Player = () =>  {
     }, 1000)
     return () => clearInterval(timeout)
   }, [timer])
-
+  
   const handleMessage = React.useCallback((event: MessageEvent) => {
     const full = event.data as string;
     let smth = full.split("-");
@@ -79,7 +83,6 @@ export const Player = () =>  {
         break;
       case "timer":
           const time: number = JSON.parse(smth[1]);
-          console.log(time + ' playertsx')
           setTimer(time)
         break;
       case "addBetOnClick":
@@ -141,8 +144,11 @@ export const Player = () =>  {
      }
     ];
     const timing = {
-      duration: 800,
+      duration: 1000,
       iterations: 1,
+    }
+    if(hasWinner){
+    sound.play();
     }
     setTimeout(()=>{
       if(winRef.current && winRef.current.innerHTML !== "0")
@@ -151,17 +157,17 @@ export const Player = () =>  {
         setWinAnim(true)
         setTimeout(()=>{
         winRef.current?.animate(moveToCash, timing) 
-        },1000)
+        },2300)
       }
-    },1800)
+    },1000)
     setTotalWin(totalWin);
     setWinAnim(false)
   }
- 
   window.addEventListener('message', handleMessage);
 
   return (
     <>
+
       <Canvas shouldRender={winAnim}/>
       <h1 id='total-win' ref={winRef} style={{position: "absolute", display: "none"}}>WON: {totalWin}</h1>
       <PlayerHands cards={cards} scores={scores} results={results} bets={bets} activeHand={activeHand} emptySeats={emptySeats}/>
