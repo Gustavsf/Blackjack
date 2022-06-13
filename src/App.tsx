@@ -29,6 +29,7 @@ function App() {
     <div className="App">
       <div id="title-div">
         <h1 id="bj-title">BlackJack</h1>
+        <h2>one-on-one against dealer</h2>
         <button id="start-btn" onClick={handleClick}>Play</button>
       </div>
       <div id="table-div">

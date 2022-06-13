@@ -1,5 +1,4 @@
 import { RootStore } from "../RootStore";
-import { getRandomCard } from "../utils/cardUtils";
 import { fillDeck } from "../utils/cardUtils";
 import { startGame } from "./phase/BetsClosedPhase";
 import { addBets } from "./phase/BetsOpenPhase";
@@ -14,9 +13,6 @@ type bets = {
   second: string,
   third: string
 }
-//card animations
-//second value render
-//remove cash aat bet
 
 export class BlackJack {
   private handCount: number[] = [1];
@@ -83,7 +79,7 @@ export class BlackJack {
       postMessage("dealPlayer-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON())
       this.lastActiveHand();
       await this.delay(1000);
-      dealDealer(this.store);
+      dealDealer(this.store, this.cards);
       postMessage("dealDealer-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
       postMessage("timer-" + 10)
         
@@ -104,7 +100,7 @@ export class BlackJack {
         postMessage("timer-" + 10)
       }) 
 
-      dealDealerFinal(this.store);
+      dealDealerFinal(this.store, this.cards);
       postMessage("finalDealerDealing-" + this.store.dealer.allCardsJSON() + "-" + this.store.dealer.score.first);
 
       await this.delay(1000);
@@ -133,9 +129,11 @@ export class BlackJack {
     const hand = this.lastActiveHand();
     if(seat)
     if(hand && hand.isDone === false && seat.hands.length < 3){
-      seat.split(hand.id);
-      postMessage("splitPlayerCards-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON());
-      this.lastActiveHand();
+      if(hand.cards[0].cardValue === hand.cards[1].cardValue){
+        seat.split(hand.id);
+        postMessage("splitPlayerCards-" + this.store.seats.seatHandsJSON() + "-" + this.store.seats.seatScoreJSON() + "-" + this.store.seats.seatBetJSON());
+        this.lastActiveHand();
+      }
     }
   }
   private doubleOnClick(){

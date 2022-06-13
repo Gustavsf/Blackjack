@@ -1,9 +1,8 @@
 import { RootStore } from "../../RootStore";
-import { getRandomCard } from "../../utils/cardUtils";
 import { Card } from "../Card";
 
-export function dealDealer(rootStore: RootStore) {
+export function dealDealer(rootStore: RootStore, cards: Card[]) {
   rootStore.phase.currentPhase = "DealerDealing";
-  rootStore.dealer.addCard(getRandomCard());
+  rootStore.dealer.addCard(cards.pop() as Card);
   rootStore.dealer.addCard(new Card("**"));
 }

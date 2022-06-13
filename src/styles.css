@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   margin: 0;
   background-color: gainsboro;
 }
@@ -174,21 +174,24 @@ body {
   
 }
 #bets-ready-btn{
-    z-index: 999;
-    width: 200px;
-    height: 80px;
-    margin: 0 auto;
-    border-radius: 15%;
-    font-size: 32px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    background-color: rgba(165, 42, 42, 0.5);
+  z-index: 999;
+  width: 200px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 15%;
+  border: 3px solid black;
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  background-color: rgb(15, 125, 9);
+  transition: 1s;
 }
 #bets-ready-btn:hover{
   font-size: 40px;
-  background-color: rgb(165, 42, 42);
+  background-color: rgb(7, 170, 7);
   color: white;
-  border: 1px solid white;
+  border: 3px solid white;
+  transition: 1s;
 }
 #select-hands-div{
   pointer-events: all;
@@ -232,9 +235,7 @@ body {
   background-color: rgba(255, 217, 0, 0.523) !important;
   border: 3px solid white;
 }
-.token-isSelected{
-  background-color: red;
-}
+
 #card-stack{
   position: absolute;
   z-index: 99;
@@ -292,10 +293,17 @@ body {
   transform: rotateZ(-20deg) translateY(50px);
 }
 .token-onselect{
-  animation: none;
-  transform: translateY(-50px);
+  width: 120px;
+  height: 120px;
   z-index: 99;
+  box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px, 
+  rgb(31, 193, 27) 0px 0px 0px 6px, 
+  rgb(255, 217, 19) 0px 0px 0px 9px, 
+  rgb(255, 156, 85) 0px 0px 0px 12px, 
+  rgb(255, 85, 85) 0px 0px 0px 15px;
+  transition: 1s;
 }
+
 #timer-div{
   pointer-events: none;
   position: absolute;
@@ -307,14 +315,15 @@ body {
 #timer-div h1{
   padding: 50px 0;
   font-size: 40px;
-  background-color: rgb(159, 31, 61);
-  border: 2px double black;
+  background-image: linear-gradient(to right,rgb(62, 149, 25), rgb(0, 255, 30));
+  border: 10px solid black;
   color: white;
   width: 150px;
-  height: 50px;
+  height: 55px;
   border-radius: 50%;
   margin: 0 auto;
   vertical-align:middle;
+  transition: 1s;
 }
 
 #player-action-overlay{
@@ -337,8 +346,19 @@ body {
 }
 #player-action-overlay button{
   width: 120px;
+  height: 70px;
+  border-radius: 20%;
   font-size: 32px;
   margin: 0 10px;
+  background-color: rgba(255, 0, 0, 0.373);
+  color: white;
+  border: 3px solid white;
+  transition: 0.5s;
+}
+#player-action-overlay button:hover{
+  transform: scale(1.2);
+  background-color: rgba(255, 0, 0, 0.9);
+  transition: 0.5s;
 }
 
 #player-action-overlay div{
@@ -419,21 +439,39 @@ body {
     transform: translateY(0px)
   } 
 }
+#title-div{
+  position: absolute;
+  z-index: 10000;
+  transform-origin: center center;
+  animation: textAnimation 2s forwards paused;
+}
+#title-div h2{
+  color: rgb(3, 69, 3);
+}
 #bj-title{
   text-align: center;
   font-size: 70px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  border-bottom: 20px dotted rgb(121, 119, 119);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  border-bottom: 20px dotted rgb(255, 255, 255);
 }
 #start-btn{
+  font-size: 50px;
+  padding: 20px;
+  width: 300px;
   border: 3px solid black;
-  background-image: linear-gradient(to right,rgb(62, 149, 25), rgb(255, 255, 255));
+  color: white;
+  background-image: linear-gradient(to right,rgb(62, 149, 25), rgb(13, 65, 19));
   transform: scale(1);
+  transition: 1s; 
 }
 #start-btn:hover{
-  font-weight: bold;
-  transform: scale(1.1);
+  transform: scale(1.2);
+  letter-spacing: 2px;
+  transition: 1s;
+}
+#start-btn:active{
+  border: 3px solid white;
 }
 @keyframes textAnimation {
   from{
@@ -443,19 +481,7 @@ body {
     transform: translateY(-500px) rotateX(-90deg) translateX(300px)
   } 
 }
-#title-div{
-  position: absolute;
-  z-index: 10000;
-  transform-origin: center center;
-  animation: textAnimation 2s forwards paused;
-  
-}
-#title-div button{
-  font-size: 50px;
-  padding: 20px;
-  width: 300px;
-  border-radius: 5%;
-}
+
 #curved-div{
   position: absolute;
   transform: translateY(-100px);
@@ -478,7 +504,8 @@ body {
 #div-wall{
   height: 90%;
   transform-origin: bottom center;
-  background-color: rgb(8, 88, 15);
+  background-image: linear-gradient(20deg, darkgreen 80%, green);
+  background: radial-gradient(circle at center, green 0, rgb(2, 77, 2) 100%);
   border: 50px solid rgb(93, 63, 12);
   position: relative;
   z-index: 90;

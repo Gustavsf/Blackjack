@@ -21,7 +21,6 @@ export const Player = () =>  {
   const [bets, setBets] = React.useState<number[][]>([])
   const [results, setResults] = React.useState<string[][]>([])
   const [money, setMoney] = React.useState<number>(0)
-  const [timer, setTimer] = React.useState<number>(0)
 
   const [totalWin, setTotalWin] = React.useState<number>(0)
   const [activeHand, setActiveHand] = React.useState<[number, number]>([0, 0])
@@ -31,7 +30,8 @@ export const Player = () =>  {
   const [winAnim, setWinAnim] = React.useState<boolean>(false)
   
   const winRef: React.RefObject<HTMLDivElement> = React.useRef(null);
-
+  
+  const [timer, setTimer] = React.useState<number>(0)
   React.useEffect(()=>{
     let timeout = setTimeout(()=>{
       if(timer !== 0){
@@ -79,6 +79,7 @@ export const Player = () =>  {
         break;
       case "timer":
           const time: number = JSON.parse(smth[1]);
+          console.log(time + ' playertsx')
           setTimer(time)
         break;
       case "addBetOnClick":
@@ -118,6 +119,7 @@ export const Player = () =>  {
         setBets(betsArr);
       }
   }
+
   const calcBet = (arr: string[][], betA: number[][]) =>{
     let hasWinner = false;
     let totalWin = 0;
@@ -139,7 +141,7 @@ export const Player = () =>  {
      }
     ];
     const timing = {
-      duration: 1000,
+      duration: 800,
       iterations: 1,
     }
     setTimeout(()=>{
@@ -148,11 +150,10 @@ export const Player = () =>  {
         winRef.current.style.display = "block"
         setWinAnim(true)
         setTimeout(()=>{
-        winRef.current?.animate(moveToCash, timing)
+        winRef.current?.animate(moveToCash, timing) 
         },1000)
       }
-      
-    },2000)
+    },1800)
     setTotalWin(totalWin);
     setWinAnim(false)
   }

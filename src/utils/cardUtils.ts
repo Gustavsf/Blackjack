@@ -4,22 +4,6 @@ import type { Value } from "../domain/Card";
 import type { CardType } from "../domain/Card";
 import { RootStore } from "../RootStore";
 
-
-export function getRandomCard(): Card{
-  const cardValues: Value[] = 
-  ["2", "3", "4", "5", "6", "7", "8", 
-  "9","T", "J", "Q", "K", "A"];
-  const cardSuits: Suit[] = 
-  ["S", "C", "H", "D"];
-  
-  const rand1 = getRandomInt(0, 13);
-  const rand2 = getRandomInt(0, 4);
-
-  const cardType: CardType = `${cardValues[rand1]}${cardSuits[rand2]}`;
-
-  const newCard = new Card(cardType);
-  return newCard;
-}
 export function fillDeck(){
   const CARDS: Card[] = []
   const cardValues: Value[] = 
@@ -95,7 +79,6 @@ export function checkWinner(
   } else {
     result = "Lose";
   }
-  //second score if first over 21
   if(playerScore.first !== playerScore.second && playerScore.first > 21){
     if ((playerScore.second <= 21 && playerScore.second > dealerScore.first) || (dealerScore.first > 21 && playerScore.second <= 21) &&
         (playerScore.second <= 21 && playerScore.second > dealerScore.second) || (dealerScore.second > 21 && playerScore.second <= 21)){
@@ -106,7 +89,6 @@ export function checkWinner(
       result = "Lose";
     }
   }
-  
   return result;
 }
 
@@ -120,6 +102,5 @@ export function checkWinner(
   if(!a && b){
     correct = b;
   }
-  //if ace busts, then ace is 1 (A + 2 = 13 / A + 2 + J = 13)
   return correct;
  }

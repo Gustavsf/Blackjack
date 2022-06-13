@@ -1,7 +1,5 @@
 import * as React from 'react'
-
 //@ts-ignore
-
 import cardSpriteSheet from "../cardsSpriteSheet.png"
 
 export const Card = (item: string) =>{

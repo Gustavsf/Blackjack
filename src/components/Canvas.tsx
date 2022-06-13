@@ -19,11 +19,11 @@ export const Canvas = (props: CanvasProps) => {
         const h = window.innerHeight
         const w = window.innerWidth
         const particle = {
-            x: w / 2 - 300,
-            y: h / 2 - 300,
+            x: w / 2 -200,
+            y: h / 2 -500,
             size: Math.random() * 5 + 1,
-            speedX: Math.random() * 10 - 1.5,
-            speedY: Math.random() * 10 - 1.5
+            speedX: Math.random() * 10 - 2.5,
+            speedY: Math.random() * 10 + 5.5
         }
         return particle
     }

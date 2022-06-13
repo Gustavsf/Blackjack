@@ -16,8 +16,6 @@ interface HandsProps{
     activeHand: [number, number]
     emptySeats: bets | undefined
 }
-let once: boolean = true;
-
 export const PlayerHands = (props: HandsProps) =>{
   let seatArr:boolean[] = []
   if(props.emptySeats?.first !== "0"){
@@ -53,10 +51,31 @@ export const PlayerHands = (props: HandsProps) =>{
           {b ? <div className="fake-sp"></div> : ""}
           <div key={s} className='split-cards'>
             {seat.map((hands, h)=>{
+              let num = s;
               let active: boolean = false;
-              if(props.activeHand[0] === s && props.activeHand[1] === h){
-                active = true;
+              if(s === 0){
+                if(a && b){
+                  num=2
+                }else if(a && !b){
+                  num=1
+                }else if(b && !a){
+                  num=1
+                }
               }
+              if(seatArr[0] === true && seatArr[1] === true && seatArr[2] === false){
+                if(num === props.activeHand[0] && props.activeHand[1] === h){
+                  active = true;
+                  }
+              }else if((!a || a && !b || !a && b) && props.cards.length <=2){
+                if(num+s === props.activeHand[0] && props.activeHand[1] === h){
+                active = true;
+                }
+              } else{
+                if(num === props.activeHand[0] && props.activeHand[1] === h){
+                  active = true;
+                  }
+              }
+              
               let res = undefined;
               if(props.results.length > 0){
                 res = props.results[s][h] as HandResults

@@ -1,5 +1,4 @@
 import { RootStore } from "../../RootStore";
-import { getRandomCard } from "../../utils/cardUtils";
 import { Card } from "../Card";
 type betAmount = 10 | 20 | 40 | 80 | 100;
 

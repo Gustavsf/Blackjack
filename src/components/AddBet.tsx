@@ -6,18 +6,13 @@ interface BetProps {
 export const AddBetOverlay = (props: BetProps) => {
     const handRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const tokenRef: React.RefObject<HTMLDivElement> = React.useRef(null);
-    const [stat, setStat] = React.useState<number[]>([1,2,3]);
-    const [activeHands, setActiveHands] = React.useState<number[]>([1]);
-
+    const [activeHands, setActiveHands] = React.useState<number[]>([]);
+    
     let bets = {
       first: "0",
       second: "0",
       third: "0"
     }
-
-    React.useEffect(()=>{
-      addClass(1)
-    }, [])
 
     const addClass = (num: number) =>{
       if(handRef.current?.children[num-1].className === "hand-isSelected"){
@@ -33,12 +28,13 @@ export const AddBetOverlay = (props: BetProps) => {
       }
     }
     const clearTokenAnim = () => {
-      for(let i = 0; i< 5; i++){
-        tokenRef.current?.children[i].classList.remove("token-onselect")
+      //bad
+      const tokens = document.getElementsByClassName('tokens')
+      for(let i = 0; i< tokens.length;i++){
+        tokens[i].classList.remove("token-onselect")
       }
     }
     const tokenOnSelect = (e: any) => {
-      clearTokenAnim();
       const btn = e.currentTarget as HTMLButtonElement
       btn.classList.add("token-onselect")
     }
@@ -76,7 +72,7 @@ export const AddBetOverlay = (props: BetProps) => {
             break;
         }
     }, [])
-
+    const tokenConfig = [["orange", "10"],["red", "20"],["green", "40"],["blue", "80"],["black", "100"]]
     return (
         <div id="addBet-overlay" style={{display: props.addBetOverlay}}>
           <button id='bets-ready-btn' onClick={()=>handleClick("sendBets")}>READY</button>
@@ -87,32 +83,18 @@ export const AddBetOverlay = (props: BetProps) => {
               <button key={3} onClick={()=>handleClick("handCount-"+3)}>III</button>
             </div>
             <div className='select-tokens-div'>
-            {stat.map(num=>{
+            {[1,2,3].map(num=>{
               let disp = "none"
               if(activeHands.includes(num)){
                 disp = "relative"
                 return(
-                  <div className="token-div" key={Math.random()+num} ref={tokenRef} style={{display:disp}} >
-                    <button className="tokens" style={{backgroundColor:"orange"}} onClick={(e)=>{
-                      handleClick("10-"+num)
-                      tokenOnSelect(e)
-                    }}>10</button>
-                    <button className="tokens" style={{backgroundColor:"red"}} onClick={(e)=>{
-                      handleClick("20-"+num)
-                      tokenOnSelect(e)
-                    }}>20</button>
-                    <button className="tokens" style={{backgroundColor:"green"}} onClick={(e)=>{
-                      handleClick("40-"+num)
-                      tokenOnSelect(e)
-                    }}>40</button>
-                    <button className="tokens" style={{backgroundColor:"blue"}} onClick={(e)=>{
-                      handleClick("80-"+num)
-                      tokenOnSelect(e)
-                    }}>80</button>
-                    <button className="tokens" style={{backgroundColor:"black"}} onClick={(e)=>{
-                      handleClick("100-"+num)
-                      tokenOnSelect(e)
-                    }}>100</button>
+                  <div className="token-div" key={num+100} style={{display:disp}} >
+                    {[0,1,2,3,4].map((item)=>{
+                      return <button className="tokens" key={item+101} style={{backgroundColor: tokenConfig[item][0]}} onClick={(e)=>{
+                        handleClick(tokenConfig[item][1]+"-"+num)
+                        tokenOnSelect(e)
+                      }}>{tokenConfig[item][1]}</button>
+                    })}
                   </div>
                 )
               } else {
